@@ -83,3 +83,7 @@ next-env.d.ts
 /lib/generated/prisma
 # Prisma generated client
 /prisma/client/
+
+# electron
+dist-electron/
+release/
