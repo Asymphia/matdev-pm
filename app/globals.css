@@ -1,26 +1,221 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: light;
+
+  --text-primary-300: #3D3D3D;
+  --text-primary-500: #2D2D2D;
+
+  --primary-300: #90C695;
+  --primary-500: #629677;
+  --primary-700: #2D4654;
+
+  --secondary-300: #F2B880;
+  --secondary-500: #D39050;
+  --secondary-700: #A66D36;
+
+  --warning: #AB831E;
+  --error: #B21C1C;
+
+  --background: #FFFFFF;
+  --foreground: #F6F6F6;
+
+  --border: #C4C4C4;
+
+  --shadow-sm: 0 4px 4px 0 color-mix(in srgb, #2D4654 5%, transparent);
+  --shadow-md: 0 4px 4px 0 color-mix(in srgb, #2D4654 20%, transparent);
+}
+
+[data-theme=dark] {
+  color-scheme: dark;
+
+  --text-primary-300: #AAAAAA;
+  --text-primary-500: #F7F7F7;
+
+  --primary-300: #BED5C8;
+  --primary-500: #8FD0AA;
+  --primary-700: #45A166;
+
+  --secondary-300: #FBD3AC;
+  --secondary-500: #F6A04C;
+  --secondary-700: #D06D0B;
+
+  --warning: #EFCC71;
+  --error: #E34F4F;
+
+  --background: #222222;
+  --foreground: #1C1C1C;
+
+  --border: #2B2B2B;
+
+  --shadow-sm: 0 4px 4px 0 color-mix(in srgb, #45A166 5%, transparent);
+  --shadow-md: 0 4px 4px 0 color-mix(in srgb, #45A166 20%, transparent);
 }
 
 @theme inline {
+  --color-text-primary-300: var(--text-primary-300);
+  --color-text-primary-500: var(--text-primary-500);
+
+  --color-primary-300: var(--primary-300);
+  --color-primary-500: var(--primary-500);
+  --color-primary-700: var(--primary-700);
+
+  --color-secondary-300: var(--secondary-300);
+  --color-secondary-500: var(--secondary-500);
+  --color-secondary-700: var(--secondary-700);
+
+  --color-warning: var(--warning);
+  --color-error: var(--error);
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+
+  --color-border: var(--border);
+
+  --font-ibm: var(--font-ibm);
+  --font-source-sans: var(--font-source-sans);
+
+  --radius-md: 30px;
+
+  --shadow-sm: var(--shadow-sm);
+  --shadow-md: var(--shadow-md);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
   }
-}
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  *::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background-color: var(--border);
+    border-radius: 999px;
+  }
+
+  *, *::before, *::after {
+    box-sizing: border-box;
+    transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out, color 0.2s ease-in-out;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    scrollbar-gutter: stable;
+    font-size: 100%;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  @media (max-width: 1024px) {
+    html {
+      font-size: 93%;
+    }
+  }
+
+  @media (max-width: 640px) {
+    html {
+      font-size: 87.5%;
+    }
+  }
+
+  @media (max-width: 480px) {
+    html {
+      font-size: 79%;
+    }
+  }
+
+  body {
+    font-family: var(--font-source-sans);
+    background-color: var(--foreground);
+    font-size: 1rem;
+    color: var(--text-primary-300);
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-ibm);
+    color: var(--text-primary-500);
+    line-height: 1.1;
+  }
+
+  h2, h3, h4, h5, h6 {
+    font-weight: 500;
+  }
+
+  h1 {
+    font-size: 3.5rem;
+    font-weight: 700;
+  }
+
+  h2 {
+    font-size: 2.25rem;
+  }
+
+  h3 {
+    font-size: 1.5rem;
+  }
+
+  h4 {
+    font-size: 1.25rem;
+  }
+
+  h5 {
+    font-size: 1.1rem;
+  }
+
+  h6 {
+    font-size: 1rem;
+  }
+
+  p {
+    text-wrap: pretty;
+    line-height: 1.6;
+  }
+
+  a {
+    color: var(--primary-500);
+    text-decoration: none;
+  }
+
+  a:hover {
+    color: var(--primary-700);
+  }
+
+  input, button, textarea, select {
+    font: inherit;
+    color: inherit;
+  }
+
+  button {
+    cursor: pointer;
+    touch-action: manipulation;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+
+  button:disabled {
+    cursor: not-allowed;
+  }
+
+  ::selection {
+    background: color-mix(in srgb, var(--primary-700) 20%, transparent);
+    color: var(--primary-700);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--primary-500);
+    outline-offset: 2px;
+  }
 }

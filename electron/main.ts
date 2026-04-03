@@ -7,6 +7,8 @@ const createWindow = () => {
     const win = new BrowserWindow({
         width: 1280,
         height: 800,
+        minWidth: 900,
+        minHeight: 600,
         webPreferences: {
             preload: path.join(__dirname, "preload.js"),
             contextIsolation: true,
@@ -14,9 +16,10 @@ const createWindow = () => {
         },
     })
 
+    win.maximize()
+
     if(isDev) {
         win.loadURL("http://localhost:3000")
-        win.webContents.openDevTools()
     } else {
         win.loadFile(path.join(__dirname, "../out/index.html"))
     }
