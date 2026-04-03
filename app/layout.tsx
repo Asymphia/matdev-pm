@@ -3,6 +3,7 @@ import "./globals.css"
 import { ReactNode } from "react"
 import { IBM_Plex_Sans, Source_Sans_3 } from "next/font/google"
 import ThemeProvider from "@/components/layout/ThemeProvider"
+import Link from "next/link"
 
 export const metadata: Metadata = {
   title: "MatDev PM",
@@ -25,6 +26,12 @@ const RootLayout = ({ children }: Readonly<{ children: ReactNode }>) => {
         <body className={`${IBMPlexSans.variable} ${SourceSans3.variable}`}>
             <ThemeProvider>
                 { children }
+
+                <Link href="/">Dashboard</Link>
+                <Link href="/projects">All projects</Link>
+                <Link href="/projects/racoons">Single project</Link>
+                <Link href="/budgets">Budgets</Link>
+                <Link href="/budgets/raccoon">Single Budgets</Link>
             </ThemeProvider>
         </body>
     </html>
