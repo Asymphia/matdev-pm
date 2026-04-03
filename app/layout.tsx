@@ -3,7 +3,7 @@ import "./globals.css"
 import { ReactNode } from "react"
 import { IBM_Plex_Sans, Source_Sans_3 } from "next/font/google"
 import ThemeProvider from "@/components/layout/ThemeProvider"
-import Link from "next/link"
+import Sidebar from "@/components/layout/Sidebar";
 
 export const metadata: Metadata = {
   title: "MatDev PM",
@@ -24,15 +24,15 @@ const RootLayout = ({ children }: Readonly<{ children: ReactNode }>) => {
   return (
       <html lang="en">
         <body className={`${IBMPlexSans.variable} ${SourceSans3.variable}`}>
-            <ThemeProvider>
-                { children }
+            {/*<ThemeProvider>*/}
+                <div className="flex flex-nowrap gap-5">
+                    <Sidebar />
 
-                <Link href="/">Dashboard</Link>
-                <Link href="/projects">All projects</Link>
-                <Link href="/projects/racoons">Single project</Link>
-                <Link href="/budgets">Budgets</Link>
-                <Link href="/budgets/raccoon">Single Budgets</Link>
-            </ThemeProvider>
+                    <div className="pt-12 px-5">
+                        { children }
+                    </div>
+                </div>
+            {/*</ThemeProvider>*/}
         </body>
     </html>
   )
