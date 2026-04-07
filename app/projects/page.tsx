@@ -1,54 +1,50 @@
-import ProjectItem from "@/components/project/ProjectItem";
+"use client"
+
+import ProjectItem from "@/components/project/ProjectItem"
+import { DUMMY_PROJECTS_DATA } from "@/lib/data"
+import ProjectTopBar from "@/components/project/ProjectTopBar"
+import {useEffect, useState} from "react"
+
+export type ProjectStatus = "To do" | "In progress" | "Completed"
 
 const ProjectsPage = () => {
-  return (
-    <div className="flec flex-col gap-4">
-      {projects.map((project) => (
-        <ProjectItem
-          key={project.id}
-          id={project.id}
-          name={project.name}
-          description={project.description}
-          startDate={new Date(project.startDate)}
-          endDate={new Date(project.endDate)}
-          budget={project.budget}
-          amountSpent={project.amountSpent}
-        />
-      ))}
-    </div>
-  );
-};
+    const [currentFilter, setCurrentFilter] = useState<ProjectStatus | null>(null)
+    const [data, setData] = useState(DUMMY_PROJECTS_DATA)
 
-export default ProjectsPage;
+    useEffect(() => {
+        if (!currentFilter) {
+            setData(DUMMY_PROJECTS_DATA)
+            return
+        }
 
-const projects = [
-  {
-    id: "1",
-    name: "project 1",
-    description: "description of project 1",
-    startDate: "2026.10.10",
-    endDate: "2026.10.20",
-    amountSpent: 100,
-    budget: 2000,
-  },
-  {
-    id: "2",
-    name: "project 2",
-    description:
-      "description of project 2description of project 2description of project 2description of project 2description of project 2description of project 2description of project 2description of project 2description of project 2description of project 2description of project 2",
-    startDate: "2026.10.10",
-    endDate: "2026.10.20",
-    amountSpent: 1000,
-    budget: 2000,
-  },
-  {
-    id: "3",
-    name: "project 3project 3project 3project 3",
-    description:
-      "description of project 3description of project 3description of project 3description of project 3description of project 3",
-    startDate: "2026.10.10",
-    endDate: "2026.10.20",
-    amountSpent: 2500,
-    budget: 2000,
-  },
-];
+        const filtered = DUMMY_PROJECTS_DATA.filter(
+            (project) => project.status === currentFilter
+        )
+
+        setData(filtered)
+    }, [currentFilter])
+
+    return (
+        <div className="flex flex-col gap-11 w-full h-full">
+            <ProjectTopBar current={ currentFilter } setCurrent={ (val) => setCurrentFilter(val) } />
+
+            <div className="grid grid-cols-4 gap-4">
+                {
+                    data.map((project, index) => (
+                        <ProjectItem
+                            key={index}
+                            name={project.projectName}
+                            description={project.description}
+                            startDate={new Date(project.startDate)}
+                            endDate={new Date(project.deadline)}
+                            budget={project.budget}
+                            amountSpent={project.amountSpent}
+                        />
+                    ))
+                }
+            </div>
+        </div>
+    )
+}
+
+export default ProjectsPage

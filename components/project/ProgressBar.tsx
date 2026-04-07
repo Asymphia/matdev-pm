@@ -1,15 +1,18 @@
+const ProgressBar = ({ name, progress, limit } : { name: string, progress: number, limit: string }) => {
+    const bgColour = progress < 100 ? progress < 70 ? "bg-primary-500" : "bg-warning" : "bg-error"
 
-const ProgressBar = ({name, progress, limit} : {name : string, progress : number, limit : string}) => {
     return (
         <div className="w-full">
-            <div className="flex justify-between"><div>{name}</div>{limit}</div>
-            <div className="h-2 bg-gray-300 rounded-full overflow-hidden">
-                <div className={`h-2 transition-all duration-500 ease-out ${progress<100 ? "bg-primary-500" : "bg-error"}`} style={{ width: `${progress}%` }}>
+            <div className="flex justify-between text-text-primary-500">
+                <span>{ name }</span>
+                <span>{ limit }</span>
+            </div>
 
-                </div>
+            <div className="h-2 bg-border rounded-full overflow-hidden">
+                <div className={`h-full rounded-full transition-all ${bgColour}`} style={{ width: `${progress}%` }} />
             </div>
         </div>
     )
 }
 
-export default ProgressBar;
+export default ProgressBar
