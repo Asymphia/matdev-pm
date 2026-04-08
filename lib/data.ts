@@ -1,0 +1,159 @@
+import { type ProjectStatus } from "@/app/projects/page"
+
+export type ProjectType = {
+    projectName: string
+    description: string
+    issueType: string
+    workpackage: string
+    topic: string
+    startDate: string
+    deadline: string
+    status: ProjectStatus
+    priority: "Low" | "Medium" | "High"
+    people: string[]
+    budget: number
+    amountSpent: number
+}
+
+export const DUMMY_PROJECTS_DATA = [
+    {
+        projectName: "Project Alpha",
+        description: "Optio laboriosam sed voluptatem vel culpa officiis aut quis. Ut voluptate optio culpa explicabo quia. Aliquid ipsa soluta qui ea non. Adipisci est est rerum qui et.",
+        issueType: "Bug",
+        workpackage: "WP-01",
+        topic: "Authentication error",
+        startDate: "2026-01-05",
+        deadline: "2026-06-15",
+        status: "To do",
+        priority: "High",
+        people: ["John", "Emily"],
+        budget: 3000,
+        amountSpent: 1200
+    },
+    {
+        projectName: "Project Beta",
+        description: "Optio laboriosam sed voluptatem vel culpa officiis aut quis. Ut voluptate optio culpa explicabo quia. Aliquid ipsa soluta qui ea non. Adipisci est est rerum qui et.",
+        issueType: "Feature",
+        workpackage: "WP-02",
+        topic: "Dashboard redesign",
+        startDate: "2026-01-10",
+        deadline: "2026-05-01",
+        status: "In progress",
+        priority: "Medium",
+        people: ["Sarah"],
+        budget: 3000,
+        amountSpent: 1200
+    },
+    {
+        projectName: "Project Gamma",
+        description: "Optio laboriosam sed voluptatem vel culpa officiis aut quis. Ut voluptate optio culpa explicabo quia. Aliquid ipsa soluta qui ea non. Adipisci est est rerum qui et.",
+        issueType: "Task",
+        workpackage: "WP-03",
+        topic: "API integration",
+        startDate: "2026-01-12",
+        deadline: "2026-09-25",
+        status: "Completed",
+        priority: "Low",
+        people: ["Michael", "Anna"],
+        budget: 3000,
+        amountSpent: 1200
+    },
+    {
+        projectName: "Project Delta",
+        description: "Optio laboriosam sed voluptatem vel culpa officiis aut quis. Ut voluptate optio culpa explicabo quia. Aliquid ipsa soluta qui ea non. Adipisci est est rerum qui et.",
+        issueType: "Bug",
+        workpackage: "WP-01",
+        topic: "Payment failure",
+        startDate: "2026-01-08",
+        deadline: "2027-11-18",
+        status: "In progress",
+        priority: "High",
+        people: ["David"],
+        budget: 3000,
+        amountSpent: 1200
+    },
+    {
+        projectName: "Project Epsilon",
+        description: "Optio laboriosam sed voluptatem vel culpa officiis aut quis. Ut voluptate optio culpa explicabo quia. Aliquid ipsa soluta qui ea non. Adipisci est est rerum qui et.",
+        issueType: "Improvement",
+        workpackage: "WP-04",
+        topic: "UI performance",
+        startDate: "2026-01-20",
+        deadline: "2026-02-05",
+        status: "To do",
+        priority: "Medium",
+        people: ["Laura", "Chris"],
+        budget: 3000,
+        amountSpent: 1200
+    },
+    {
+        projectName: "Project Zeta",
+        description: "Optio laboriosam sed voluptatem vel culpa officiis aut quis. Ut voluptate optio culpa explicabo quia. Aliquid ipsa soluta qui ea non. Adipisci est est rerum qui et.",
+        issueType: "Feature",
+        workpackage: "WP-02",
+        topic: "User roles system",
+        startDate: "2026-01-11",
+        deadline: "2026-10-10",
+        status: "In progress",
+        priority: "High",
+        people: ["Tom", "Nina"],
+        budget: 3000,
+        amountSpent: 1200
+    },
+    {
+        projectName: "Project Eta",
+        description: "Optio laboriosam sed voluptatem vel culpa officiis aut quis. Ut voluptate optio culpa explicabo quia. Aliquid ipsa soluta qui ea non. Adipisci est est rerum qui et.",
+        issueType: "Task",
+        workpackage: "WP-05",
+        topic: "Data export",
+        startDate: "2026-01-14",
+        deadline: "2026-2-28",
+        status: "Completed",
+        priority: "Low",
+        people: ["Paul"],
+        budget: 3000,
+        amountSpent: 1200
+    },
+    {
+        projectName: "Project Theta",
+        description: "Optio laboriosam sed voluptatem vel culpa officiis aut quis. Ut voluptate optio culpa explicabo quia. Aliquid ipsa soluta qui ea non. Adipisci est est rerum qui et.",
+        issueType: "Bug",
+        workpackage: "WP-03",
+        topic: "Notification delay",
+        startDate: "2026-01-09",
+        deadline: "2026-09-19",
+        status: "Completed",
+        priority: "Medium",
+        people: ["Olivia"],
+        budget: 3000,
+        amountSpent: 1200
+    },
+    {
+        projectName: "Project Iota",
+        description: "Optio laboriosam sed voluptatem vel culpa officiis aut quis. Ut voluptate optio culpa explicabo quia. Aliquid ipsa soluta qui ea non. Adipisci est est rerum qui et.",
+        issueType: "Improvement",
+        workpackage: "WP-06",
+        topic: "Search optimization",
+        startDate: "2026-01-03",
+        deadline: "2026-01-22",
+        status: "In progress",
+        priority: "High",
+        people: ["Daniel", "Sophia"],
+        budget: 3000,
+        amountSpent: 1200
+    },
+    {
+        projectName: "Project Kappa",
+        description: "Optio laboriosam sed voluptatem vel culpa officiis aut quis. Ut voluptate optio culpa explicabo quia. Aliquid ipsa soluta qui ea non. Adipisci est est rerum qui et.",
+        issueType: "Feature",
+        workpackage: "WP-04",
+        topic: "Mobile support",
+        startDate: "2026-01-07",
+        deadline: "2026-02-14",
+        status: "To do",
+        priority: "Medium",
+        people: ["James", "Emma"],
+        budget: 3000,
+        amountSpent: 1200
+    },
+] as ProjectType[]
