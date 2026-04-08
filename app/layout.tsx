@@ -25,10 +25,10 @@ const RootLayout = ({ children }: Readonly<{ children: ReactNode }>) => {
       <html lang="en">
         <body className={`${IBMPlexSans.variable} ${SourceSans3.variable}`}>
             {/*<ThemeProvider>*/}
-                <div className="flex flex-nowrap gap-5 w-screen h-screen">
+                <div className="w-screen h-screen">
                     <Sidebar />
 
-                    <div className="pt-12 pl-5 pr-12 flex-1">
+                    <div className="pt-12 pl-5 pr-12 ml-19">
                         { children }
                     </div>
                 </div>

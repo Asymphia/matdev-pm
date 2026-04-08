@@ -11,8 +11,8 @@ const Sidebar = () => {
     ]
 
     return (
-        <div className="h-full px-6">
-            <nav className="flex flex-col gap-y-4 h-fit mt-50">
+        <div className="h-full w-fit px-6 fixed inset-0">
+            <nav className="flex flex-col gap-y-4 h-fit mt-39">
                 {
                     menuLinks.map((link, index) => (
                         <NavItem href={ link.href } Icon={ link.icon } key={ index } />

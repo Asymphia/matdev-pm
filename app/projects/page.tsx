@@ -28,7 +28,7 @@ const ProjectsPage = () => {
         <div className="flex flex-col gap-11 w-full h-full">
             <ProjectTopBar current={ currentFilter } setCurrent={ (val) => setCurrentFilter(val) } />
 
-            <div className="grid grid-cols-4 gap-4">
+            <div className="grid 2xl:grid-cols-4 grid-cols-3 gap-4">
                 {
                     data.map((project, index) => (
                         <ProjectItem
