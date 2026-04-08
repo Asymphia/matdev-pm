@@ -1,3 +1,20 @@
+import { type ProjectStatus } from "@/app/projects/page"
+
+export type ProjectType = {
+    projectName: string
+    description: string
+    issueType: string
+    workpackage: string
+    topic: string
+    startDate: string
+    deadline: string
+    status: ProjectStatus
+    priority: "Low" | "Medium" | "High"
+    people: string[]
+    budget: number
+    amountSpent: number
+}
+
 export const DUMMY_PROJECTS_DATA = [
     {
         projectName: "Project Alpha",
@@ -139,4 +156,4 @@ export const DUMMY_PROJECTS_DATA = [
         budget: 3000,
         amountSpent: 1200
     },
-]
+] as ProjectType[]

@@ -3,26 +3,14 @@
 import ProjectItem from "@/components/project/ProjectItem"
 import { DUMMY_PROJECTS_DATA } from "@/lib/data"
 import ProjectTopBar from "@/components/project/ProjectTopBar"
-import {useEffect, useState} from "react"
+import { useState } from "react"
 
 export type ProjectStatus = "To do" | "In progress" | "Completed"
 
 const ProjectsPage = () => {
     const [currentFilter, setCurrentFilter] = useState<ProjectStatus | null>(null)
-    const [data, setData] = useState(DUMMY_PROJECTS_DATA)
 
-    useEffect(() => {
-        if (!currentFilter) {
-            setData(DUMMY_PROJECTS_DATA)
-            return
-        }
-
-        const filtered = DUMMY_PROJECTS_DATA.filter(
-            (project) => project.status === currentFilter
-        )
-
-        setData(filtered)
-    }, [currentFilter])
+    const data = currentFilter ? DUMMY_PROJECTS_DATA.filter(project => project.status === currentFilter) : DUMMY_PROJECTS_DATA
 
     return (
         <div className="flex flex-col gap-11 w-full h-full">
@@ -32,13 +20,8 @@ const ProjectsPage = () => {
                 {
                     data.map((project, index) => (
                         <ProjectItem
-                            key={index}
-                            name={project.projectName}
-                            description={project.description}
-                            startDate={new Date(project.startDate)}
-                            endDate={new Date(project.deadline)}
-                            budget={project.budget}
-                            amountSpent={project.amountSpent}
+                            key={ index }
+                            project={ project }
                         />
                     ))
                 }
