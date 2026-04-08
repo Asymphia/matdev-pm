@@ -28,7 +28,7 @@ const RootLayout = ({ children }: Readonly<{ children: ReactNode }>) => {
                 <div className="flex flex-nowrap gap-5">
                     <Sidebar />
 
-                    <div className="pt-12 px-5">
+                    <div className="pt-12 px-5 flex-1 w-full">
                         { children }
                     </div>
                 </div>
