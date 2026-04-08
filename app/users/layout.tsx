@@ -1,9 +1,12 @@
+import UsersTopBar from "@/components/users/UsersTopBar";
 import { ReactNode } from "react";
 
 const UsersLayout = ({ children }: Readonly<{ children: ReactNode }>) => {
   return (
-    <div>
-      <div className="w-full h-6 rounded-lg bg-primary-700"></div>
+    <div className="grid gap-11">
+      <div className="w-full">
+        <UsersTopBar/>
+      </div>
       <div>{children}</div>
     </div>
   );
