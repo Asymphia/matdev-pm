@@ -6,7 +6,7 @@ import NavItem from "@/components/layout/NavItem"
 const Sidebar = () => {
     const menuLinks = [
         { icon: HomeIcon, href: "/" },
-        { icon: CreditCardIcon, href: "/budgets" },
+        { icon: CreditCardIcon, href: "/project-tags" },
         { icon: ListBulletIcon, href: "/projects" },
         { icon: UserIcon, href: "/users"}
     ]
