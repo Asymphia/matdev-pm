@@ -12,8 +12,8 @@ const TagItem = (tag : Tag) => {
         <div className="flex flex-row justify-between">
             <button onClick={tag.onClick}>{tag.tagName}</button>
             <button type="button" className="cursor-pointer">
-                    <EllipsisVerticalIcon className="size-6 text-text-primary-500" />
-                </button>
+                <EllipsisVerticalIcon className="size-6 text-text-primary-500" />
+            </button>
         </div>
     )
 }
