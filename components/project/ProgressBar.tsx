@@ -1,7 +1,7 @@
 const ProgressBar = ({ name, progress, limit } : { name: string, progress?: number, limit?: string }) => {
     if(!progress || !limit) {
         return (
-            <div className="text-text-primary-500">
+            <div className="text-sm">
                 { name } not set.
             </div>
         )
@@ -11,7 +11,7 @@ const ProgressBar = ({ name, progress, limit } : { name: string, progress?: numb
 
     return (
         <div className="w-full">
-            <div className="flex justify-between text-text-primary-500">
+            <div className="flex justify-between text-sm">
                 <span>{ name }</span>
                 <span>{ limit }</span>
             </div>
