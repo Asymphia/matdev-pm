@@ -8,17 +8,15 @@ const Sidebar = () => {
         { icon: HomeIcon, href: "/" },
         { icon: CreditCardIcon, href: "/project-tags" },
         { icon: ListBulletIcon, href: "/projects" },
-        { icon: UserIcon, href: "/users"}
+        { icon: UserIcon, href: "/users" },
     ]
 
     return (
-        <div className="h-full w-fit px-6 fixed inset-0">
-            <nav className="flex flex-col gap-y-4 h-fit mt-39">
-                {
-                    menuLinks.map((link, index) => (
-                        <NavItem href={ link.href } Icon={ link.icon } key={ index } />
-                    ))
-                }
+        <div className="fixed inset-0 h-full w-fit px-6">
+            <nav className="mt-39 flex h-fit flex-col gap-y-4">
+                {menuLinks.map((link, index) => (
+                    <NavItem href={link.href} Icon={link.icon} key={index} />
+                ))}
             </nav>
         </div>
     )

@@ -1,17 +1,17 @@
 {
-  "compilerOptions": {
-    "target": "ES2020",
-    "module": "commonjs",
-    "outDir": "dist-electron",
-    "rootDir": "electron",
-    "strict": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true
-  },
-  "include": ["electron/**/*"],
-  "extraResources": [
-    { "from": ".next/standalone", "to": ".next/standalone" },
-    { "from": ".next/static", "to": ".next/standalone/.next/static" },
-    { "from": "public", "to": ".next/standalone/public" }
-  ]
+    "compilerOptions": {
+        "target": "ES2020",
+        "module": "commonjs",
+        "outDir": "dist-electron",
+        "rootDir": "electron",
+        "strict": true,
+        "esModuleInterop": true,
+        "skipLibCheck": true
+    },
+    "include": ["electron/**/*"],
+    "extraResources": [
+        { "from": ".next/standalone", "to": ".next/standalone" },
+        { "from": ".next/static", "to": ".next/standalone/.next/static" },
+        { "from": "public", "to": ".next/standalone/public" }
+    ]
 }

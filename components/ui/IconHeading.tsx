@@ -7,13 +7,12 @@ interface IconHeadingProps {
 
 const IconHeading = ({ text, Icon }: IconHeadingProps) => {
     return (
-        <h3 className="flex flex-nowrap align-center gap-4">
-            <div className="size-11 flex items-center justify-center rounded-full border border-solid border-border bg-foreground">
-                <Icon className="size-6 text-text-primary-500" />
+        <h3 className="align-center flex flex-nowrap gap-4">
+            <div className="border-border bg-foreground flex size-11 items-center justify-center rounded-full border border-solid">
+                <Icon className="text-text-primary-500 size-6" />
             </div>
 
-
-            <p>{ text }</p>
+            <p>{text}</p>
         </h3>
     )
 }

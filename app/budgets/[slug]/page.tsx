@@ -1,9 +1,5 @@
 const SingleBudgetPage = () => {
-    return (
-        <div>
-            Single Budget Page
-        </div>
-    )
+    return <div>Single Budget Page</div>
 }
 
 export default SingleBudgetPage

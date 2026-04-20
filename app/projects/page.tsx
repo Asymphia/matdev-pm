@@ -13,18 +13,13 @@ const ProjectsPage = () => {
     const data = currentFilter ? DUMMY_PROJECTS_DATA.filter(project => project.status === currentFilter) : DUMMY_PROJECTS_DATA
 
     return (
-        <div className="flex flex-col gap-11 w-full h-full">
-            <ProjectTopBar current={ currentFilter } setCurrent={ (val) => setCurrentFilter(val) } />
+        <div className="flex h-full w-full flex-col gap-11">
+            <ProjectTopBar current={currentFilter} setCurrent={val => setCurrentFilter(val)} />
 
-            <div className="grid 2xl:grid-cols-4 grid-cols-2 gap-4">
-                {
-                    data.map((project, index) => (
-                        <ProjectItem
-                            key={ index }
-                            project={ project }
-                        />
-                    ))
-                }
+            <div className="grid grid-cols-2 gap-4 2xl:grid-cols-3">
+                {data.map((project, index) => (
+                    <ProjectItem key={index} project={project} />
+                ))}
             </div>
         </div>
     )

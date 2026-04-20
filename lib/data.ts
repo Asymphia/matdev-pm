@@ -1,6 +1,7 @@
 import { type ProjectStatus } from "@/app/projects/page"
 
 export type ProjectType = {
+    id: number
     projectName: string
     description: string
     issueType: string
@@ -17,6 +18,7 @@ export type ProjectType = {
 
 export const DUMMY_PROJECTS_DATA = [
     {
+        id: 1,
         projectName: "Project Alpha",
         description: "Optio laboriosam sed voluptatem vel culpa officiis aut quis. Ut voluptate optio culpa explicabo quia. Aliquid ipsa soluta qui ea non. Adipisci est est rerum qui et.",
         issueType: "Bug",
@@ -28,9 +30,10 @@ export const DUMMY_PROJECTS_DATA = [
         priority: "High",
         people: ["John", "Emily"],
         budget: 3000,
-        amountSpent: 1200
+        amountSpent: 1200,
     },
     {
+        id: 2,
         projectName: "Project Beta",
         description: "Optio laboriosam sed voluptatem vel culpa officiis aut quis. Ut voluptate optio culpa explicabo quia. Aliquid ipsa soluta qui ea non. Adipisci est est rerum qui et.",
         issueType: "Feature",
@@ -42,9 +45,10 @@ export const DUMMY_PROJECTS_DATA = [
         priority: "Medium",
         people: ["Sarah"],
         budget: 3000,
-        amountSpent: 1200
+        amountSpent: 1200,
     },
     {
+        id: 3,
         projectName: "Project Gamma",
         description: "Optio laboriosam sed voluptatem vel culpa officiis aut quis. Ut voluptate optio culpa explicabo quia. Aliquid ipsa soluta qui ea non. Adipisci est est rerum qui et.",
         issueType: "Task",
@@ -56,9 +60,10 @@ export const DUMMY_PROJECTS_DATA = [
         priority: "Low",
         people: ["Michael", "Anna"],
         budget: 3000,
-        amountSpent: 1200
+        amountSpent: 1200,
     },
     {
+        id: 4,
         projectName: "Project Delta",
         description: "Optio laboriosam sed voluptatem vel culpa officiis aut quis. Ut voluptate optio culpa explicabo quia. Aliquid ipsa soluta qui ea non. Adipisci est est rerum qui et.",
         issueType: "Bug",
@@ -70,9 +75,10 @@ export const DUMMY_PROJECTS_DATA = [
         priority: "High",
         people: ["David"],
         budget: 3000,
-        amountSpent: 1200
+        amountSpent: 1200,
     },
     {
+        id: 5,
         projectName: "Project Epsilon",
         description: "Optio laboriosam sed voluptatem vel culpa officiis aut quis. Ut voluptate optio culpa explicabo quia. Aliquid ipsa soluta qui ea non. Adipisci est est rerum qui et.",
         issueType: "Improvement",
@@ -84,9 +90,10 @@ export const DUMMY_PROJECTS_DATA = [
         priority: "Medium",
         people: ["Laura", "Chris"],
         budget: 3000,
-        amountSpent: 1200
+        amountSpent: 1200,
     },
     {
+        id: 6,
         projectName: "Project Zeta",
         description: "Optio laboriosam sed voluptatem vel culpa officiis aut quis. Ut voluptate optio culpa explicabo quia. Aliquid ipsa soluta qui ea non. Adipisci est est rerum qui et.",
         issueType: "Feature",
@@ -98,9 +105,10 @@ export const DUMMY_PROJECTS_DATA = [
         priority: "High",
         people: ["Tom", "Nina"],
         budget: 3000,
-        amountSpent: 1200
+        amountSpent: 1200,
     },
     {
+        id: 7,
         projectName: "Project Eta",
         description: "Optio laboriosam sed voluptatem vel culpa officiis aut quis. Ut voluptate optio culpa explicabo quia. Aliquid ipsa soluta qui ea non. Adipisci est est rerum qui et.",
         issueType: "Task",
@@ -112,9 +120,10 @@ export const DUMMY_PROJECTS_DATA = [
         priority: "Low",
         people: ["Paul"],
         budget: 3000,
-        amountSpent: 1200
+        amountSpent: 1200,
     },
     {
+        id: 8,
         projectName: "Project Theta",
         description: "Optio laboriosam sed voluptatem vel culpa officiis aut quis. Ut voluptate optio culpa explicabo quia. Aliquid ipsa soluta qui ea non. Adipisci est est rerum qui et.",
         issueType: "Bug",
@@ -126,9 +135,10 @@ export const DUMMY_PROJECTS_DATA = [
         priority: "Medium",
         people: ["Olivia"],
         budget: 3000,
-        amountSpent: 1200
+        amountSpent: 1200,
     },
     {
+        id: 9,
         projectName: "Project Iota",
         description: "Optio laboriosam sed voluptatem vel culpa officiis aut quis. Ut voluptate optio culpa explicabo quia. Aliquid ipsa soluta qui ea non. Adipisci est est rerum qui et.",
         issueType: "Improvement",
@@ -140,9 +150,10 @@ export const DUMMY_PROJECTS_DATA = [
         priority: "High",
         people: ["Daniel", "Sophia"],
         budget: 3000,
-        amountSpent: 1200
+        amountSpent: 1200,
     },
     {
+        id: 10,
         projectName: "Project Kappa",
         description: "Optio laboriosam sed voluptatem vel culpa officiis aut quis. Ut voluptate optio culpa explicabo quia. Aliquid ipsa soluta qui ea non. Adipisci est est rerum qui et.",
         issueType: "Feature",
@@ -154,6 +165,6 @@ export const DUMMY_PROJECTS_DATA = [
         priority: "Medium",
         people: ["James", "Emma"],
         budget: 3000,
-        amountSpent: 1200
+        amountSpent: 1200,
     },
 ] as ProjectType[]

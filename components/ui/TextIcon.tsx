@@ -8,11 +8,9 @@ interface TextIconProps {
 const TextIcon = ({ text, Icon }: TextIconProps) => {
     return (
         <div className="flex items-center gap-2">
-            <Icon className="size-4 text-text-primary-300" />
+            <Icon className="text-text-primary-300 size-4" />
 
-            <p className="text-sm">
-                { text }
-            </p>
+            <p className="text-sm">{text}</p>
         </div>
     )
 }
