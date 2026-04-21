@@ -3,8 +3,11 @@ import { ProjectStatus } from "@/app/projects/page"
 import IconButton from "@/components/ui/IconButton"
 import { PlusIcon } from "@heroicons/react/24/outline"
 import SearchBar from "@/components/ui/SearchBar"
+import Modal from "@/components/ui/Modal"
+import { useRouter } from "next/navigation"
 
 const ProjectTopBar = ({ current, setCurrent }: { current: ProjectStatus | null, setCurrent: (val: ProjectStatus | null) => void }) => {
+    const router = useRouter()
     return (
         <header className="flex flex-nowrap min-w-0 items-center justify-between">
             <h1>
@@ -14,7 +17,7 @@ const ProjectTopBar = ({ current, setCurrent }: { current: ProjectStatus | null,
             <FilterButtons current={current} setCurrent={setCurrent} />
 
             <div className="flex items-center gap-3">
-                <IconButton Icon={ PlusIcon } onClick={() => {}} />
+                <IconButton Icon={ PlusIcon } onClick={() => router.push('?showmodal=true')} />
                 <SearchBar />
             </div>
         </header>
