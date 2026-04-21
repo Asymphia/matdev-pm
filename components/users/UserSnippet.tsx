@@ -1,4 +1,4 @@
-import { Bars3Icon } from "@heroicons/react/24/outline";
+import { EllipsisVerticalIcon } from "@heroicons/react/24/outline";
 
 interface UserSnippetProps {
   name: string,
@@ -12,7 +12,7 @@ const UserSnippet = ({name, email, phone} : UserSnippetProps) => {
       <div>{name}</div>
       <div>{email}</div>
       <div className="font-medium">{phone}</div>
-      <button><Bars3Icon className="size-6"/></button>
+      <button><EllipsisVerticalIcon className="size-6"/></button>
     </div>
   );
 };

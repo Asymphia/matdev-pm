@@ -17,7 +17,9 @@ import {
   PencilSquareIcon,
   UserIcon,
   ChevronDownIcon,
+  ArrowLeftIcon,
 } from "@heroicons/react/24/outline";
+import Link from "next/link";
 
 export type ProjectStatus = "To do" | "In progress" | "Completed";
 
@@ -75,9 +77,15 @@ const ProjectsPage = () => {
         {isModalOpen && (
           <Modal href="/projects">
             <div className="w-[600px] max-w-full">
-              <h2 className="text-2xl font-semibold mb-6 pb-4">
-                Project form
-              </h2>
+              <div className="flex items-center justify-between mb-6 pb-4 border-b border-border">
+                <h2 className="text-2xl font-semibold">Project form</h2>
+                <Link
+                  href="/projects"
+                  className="flex items-center justify-center w-10 h-10 border border-border rounded-full hover:bg-secondary transition-all group"
+                >
+                  <ArrowLeftIcon className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
+                </Link>
+              </div>
 
               <form action={handleSubmit} className="flex flex-col gap-4">
                 <FormField icon={LinkIcon}>
