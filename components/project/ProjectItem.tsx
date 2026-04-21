@@ -4,55 +4,46 @@ import BlockWrapper from "@/components/ui/BlockWrapper"
 import { calculateBudgetDiff, calculateTimeProgress } from "@/lib/projects-helpers"
 import { type ProjectType } from "@/lib/data"
 import TextIcon from "@/components/ui/TextIcon"
+import Link from "next/link"
 
 const ProjectItem = ({ project }: { project: ProjectType }) => {
     const start = new Date(project.startDate)
     const end = new Date(project.deadline)
 
     return (
-        <BlockWrapper className="gap-4 cursor-pointer">
-            <div className="w-full flex justify-between">
-                <h3 className="line-clamp-1 mb-2">
-                    { project.projectName }
-                </h3>
+        <Link href={`/projects/${project.id}`}>
+            <BlockWrapper className="cursor-pointer gap-4">
+                <div className="flex w-full justify-between">
+                    <h3 className="mb-2 line-clamp-1">{project.projectName}</h3>
 
-                <button type="button" className="cursor-pointer">
-                    <EllipsisVerticalIcon className="size-6 text-text-primary-500" />
-                </button>
-            </div>
-
-            <div className="line-clamp-2">
-                { project.description }
-            </div>
-
-            <div className="grid grid-cols-3">
-                <div className="justify-self-start">
-                    <TextIcon text={project.topic} Icon={HashtagIcon} />
+                    <button type="button" className="cursor-pointer">
+                        <EllipsisVerticalIcon className="text-text-primary-500 size-6" />
+                    </button>
                 </div>
 
-                <div className="justify-self-center">
-                    <TextIcon text={project.issueType} Icon={ExclamationTriangleIcon} />
+                <div className="line-clamp-2">{project.description}</div>
+
+                <div className="grid grid-cols-3">
+                    <div className="justify-self-start">
+                        <TextIcon text={project.topic} Icon={HashtagIcon} />
+                    </div>
+
+                    <div className="justify-self-center">
+                        <TextIcon text={project.issueType} Icon={ExclamationTriangleIcon} />
+                    </div>
+
+                    <div className="justify-self-end">
+                        <TextIcon text={project.workpackage} Icon={BriefcaseIcon} />
+                    </div>
                 </div>
 
-                <div className="justify-self-end">
-                    <TextIcon text={project.workpackage} Icon={BriefcaseIcon} />
+                <div className="flex flex-col gap-3">
+                    <ProgressBar name="Budget" progress={calculateBudgetDiff(project.budget, project.amountSpent)} limit={project.amountSpent + "/" + project.budget} />
+
+                    <ProgressBar name="Deadline" progress={calculateTimeProgress(start, end)} limit={end.toLocaleDateString("pl-PL")} />
                 </div>
-            </div>
-
-            <div className="flex flex-col gap-3">
-                <ProgressBar
-                    name="Budget"
-                    progress={calculateBudgetDiff(project.budget, project.amountSpent)}
-                    limit={project.amountSpent + '/' + project.budget}
-                />
-
-                <ProgressBar
-                    name="Deadline"
-                    progress={calculateTimeProgress(start, end)}
-                    limit={end.toLocaleDateString("pl-PL")}
-                />
-            </div>
-        </BlockWrapper>
+            </BlockWrapper>
+        </Link>
     )
 }
 

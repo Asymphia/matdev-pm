@@ -9,10 +9,8 @@ import { useRouter } from "next/navigation"
 const ProjectTopBar = ({ current, setCurrent }: { current: ProjectStatus | null, setCurrent: (val: ProjectStatus | null) => void }) => {
     const router = useRouter()
     return (
-        <header className="flex flex-nowrap min-w-0 items-center justify-between">
-            <h1>
-                Projects
-            </h1>
+        <header className="flex min-w-0 flex-nowrap items-center justify-between">
+            <h1>Projects</h1>
 
             <FilterButtons current={current} setCurrent={setCurrent} />
 

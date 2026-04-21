@@ -8,10 +8,8 @@ import { useRouter } from "next/navigation"
 const UsersTopBar = () => {
     const router = useRouter()
     return (
-        <header className="flex flex-nowrap min-w-0 items-center justify-between">
-            <h1>
-                Users
-            </h1>
+        <header className="flex min-w-0 flex-nowrap items-center justify-between">
+            <h1>Users</h1>
 
             <div className="flex items-center gap-3">
                 <IconButton Icon={ PlusIcon } onClick={() => router.push('?showmodal=true')} />

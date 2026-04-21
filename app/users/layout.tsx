@@ -1,5 +1,5 @@
-import UsersTopBar from "@/components/users/UsersTopBar";
-import { ReactNode } from "react";
+import UsersTopBar from "@/components/users/UsersTopBar"
+import { ReactNode } from "react"
 
 const UsersLayout = ({ children }: Readonly<{ children: ReactNode }>) => {
   return (
@@ -7,4 +7,4 @@ const UsersLayout = ({ children }: Readonly<{ children: ReactNode }>) => {
   );
 };
 
-export default UsersLayout;
+export default UsersLayout

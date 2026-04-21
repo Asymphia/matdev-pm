@@ -7,11 +7,8 @@ interface IconButtonProps {
 
 const IconButton = ({ onClick, Icon }: IconButtonProps) => {
     return (
-        <button
-            onClick={ onClick }
-            className="size-11 flex items-center justify-center rounded-full border border-solid border-border bg-background hover:bg-foreground group"
-        >
-            <Icon className="size-6 text-text-primary-500 group-hover:text-primary-500" />
+        <button onClick={onClick} className="border-border bg-background hover:bg-foreground group flex size-11 items-center justify-center rounded-full border border-solid">
+            <Icon className="text-text-primary-500 group-hover:text-primary-500 size-6" />
         </button>
     )
 }

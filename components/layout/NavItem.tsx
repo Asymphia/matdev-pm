@@ -15,13 +15,10 @@ const NavItem = ({ href, Icon }: NavItemProps) => {
 
     return (
         <Link
-            href={ href }
-            className={`size-13 flex items-center justify-center rounded-full border border-solid border-border group 
-                                    ${ isActive ? "bg-primary-700" : "bg-background hover:bg-foreground" }` }
+            href={href}
+            className={`border-border group flex size-13 items-center justify-center rounded-full border border-solid ${isActive ? "bg-primary-700" : "bg-background hover:bg-foreground"}`}
         >
-            <Icon
-                className={`size-6 ${ isActive ? "text-background" : "text-primary-700 group-hover:text-primary-500" }`}
-            />
+            <Icon className={`size-6 ${isActive ? "text-background" : "text-primary-700 group-hover:text-primary-500"}`} />
         </Link>
     )
 }

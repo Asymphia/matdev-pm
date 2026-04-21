@@ -1,9 +1,9 @@
 import { EllipsisVerticalIcon } from "@heroicons/react/24/outline";
 
 interface UserSnippetProps {
-  name: string,
-  email: string,
-  phone:string
+    name: string
+    email: string
+    phone: string
 }
 
 const UserSnippet = ({name, email, phone} : UserSnippetProps) => {
@@ -17,4 +17,4 @@ const UserSnippet = ({name, email, phone} : UserSnippetProps) => {
   );
 };
 
-export default UserSnippet;
+export default UserSnippet

@@ -1,4 +1,4 @@
-export const calculateBudgetDiff = (budget:number, amountSpent:number) => {
+export const calculateBudgetDiff = (budget: number, amountSpent: number) => {
     return (amountSpent / budget) * 100
 }
 

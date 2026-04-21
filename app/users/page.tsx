@@ -152,88 +152,88 @@ const UsersPage = () => {
 export default UsersPage;
 
 const Users = [
-  {
-    firstName: "Jan",
-    secondName: "Kowalski",
-    email: "jakisemail@gmail.com",
-    phone: "123-123-123",
-  },
-  {
-    firstName: "Jan",
-    secondName: "Kowalski",
-    email: "jakisemail@gmail.com",
-    phone: "123-123-123",
-  },
-  {
-    firstName: "Jan",
-    secondName: "Kowalski",
-    email: "jakisemail@gmail.com",
-    phone: "123-123-123",
-  },
-  {
-    firstName: "Jan",
-    secondName: "Kowalski",
-    email: "jakisemail@gmail.com",
-    phone: "123-123-123",
-  },
-  {
-    firstName: "Jan",
-    secondName: "Kowalski",
-    email: "jakisemail@gmail.com",
-    phone: "123-123-123",
-  },
-  {
-    firstName: "Jan",
-    secondName: "Kowalski",
-    email: "jakisemail@gmail.com",
-    phone: "123-123-123",
-  },
-  {
-    firstName: "Jan",
-    secondName: "Kowalski",
-    email: "jakisemail@gmail.com",
-    phone: "123-123-123",
-  },
-  {
-    firstName: "Jan",
-    secondName: "Kowalski",
-    email: "jakisemail@gmail.com",
-    phone: "123-123-123",
-  },
-  {
-    firstName: "Jan",
-    secondName: "Kowalski",
-    email: "jakisemail@gmail.com",
-    phone: "123-123-123",
-  },
-  {
-    firstName: "Jan",
-    secondName: "Kowalski",
-    email: "jakisemail@gmail.com",
-    phone: "123-123-123",
-  },
-  {
-    firstName: "Jan",
-    secondName: "Kowalski",
-    email: "jakisemail@gmail.com",
-    phone: "123-123-123",
-  },
-  {
-    firstName: "Jan",
-    secondName: "Kowalski",
-    email: "jakisemail@gmail.com",
-    phone: "123-123-123",
-  },
-  {
-    firstName: "Jan",
-    secondName: "Kowalski",
-    email: "jakisemail@gmail.com",
-    phone: "123-123-123",
-  },
-  {
-    firstName: "Jan",
-    secondName: "Kowalski",
-    email: "jakisemail@gmail.com",
-    phone: "123-123-123",
-  },
-];
+    {
+        firstName: "Jan",
+        secondName: "Kowalski",
+        email: "jakisemail@gmail.com",
+        phone: "123-123-123",
+    },
+    {
+        firstName: "Jan",
+        secondName: "Kowalski",
+        email: "jakisemail@gmail.com",
+        phone: "123-123-123",
+    },
+    {
+        firstName: "Jan",
+        secondName: "Kowalski",
+        email: "jakisemail@gmail.com",
+        phone: "123-123-123",
+    },
+    {
+        firstName: "Jan",
+        secondName: "Kowalski",
+        email: "jakisemail@gmail.com",
+        phone: "123-123-123",
+    },
+    {
+        firstName: "Jan",
+        secondName: "Kowalski",
+        email: "jakisemail@gmail.com",
+        phone: "123-123-123",
+    },
+    {
+        firstName: "Jan",
+        secondName: "Kowalski",
+        email: "jakisemail@gmail.com",
+        phone: "123-123-123",
+    },
+    {
+        firstName: "Jan",
+        secondName: "Kowalski",
+        email: "jakisemail@gmail.com",
+        phone: "123-123-123",
+    },
+    {
+        firstName: "Jan",
+        secondName: "Kowalski",
+        email: "jakisemail@gmail.com",
+        phone: "123-123-123",
+    },
+    {
+        firstName: "Jan",
+        secondName: "Kowalski",
+        email: "jakisemail@gmail.com",
+        phone: "123-123-123",
+    },
+    {
+        firstName: "Jan",
+        secondName: "Kowalski",
+        email: "jakisemail@gmail.com",
+        phone: "123-123-123",
+    },
+    {
+        firstName: "Jan",
+        secondName: "Kowalski",
+        email: "jakisemail@gmail.com",
+        phone: "123-123-123",
+    },
+    {
+        firstName: "Jan",
+        secondName: "Kowalski",
+        email: "jakisemail@gmail.com",
+        phone: "123-123-123",
+    },
+    {
+        firstName: "Jan",
+        secondName: "Kowalski",
+        email: "jakisemail@gmail.com",
+        phone: "123-123-123",
+    },
+    {
+        firstName: "Jan",
+        secondName: "Kowalski",
+        email: "jakisemail@gmail.com",
+        phone: "123-123-123",
+    },
+]
