@@ -1,6 +1,7 @@
-import { DUMMY_PROJECTS_DATA } from "@/lib/data"
+import { DUMMY_PROJECTS_DATA, DUMMY_TASKS_DATA } from "@/lib/data"
 import { notFound } from "next/navigation"
 import ProjectDescription from "@/components/project/ProjectDescription"
+import TasksList from "@/components/project/TasksList"
 
 const SingleProjectPage = async ({ params }: { params: Promise<{ projectSlug: string }> }) => {
     const { projectSlug } = await params
@@ -10,12 +11,18 @@ const SingleProjectPage = async ({ params }: { params: Promise<{ projectSlug: st
         notFound()
     }
 
+    const tasks = DUMMY_TASKS_DATA.filter(task => project.id === task.projectId)
+
     return (
         <div className="flex h-full w-full flex-col gap-11">
             <h1>{project.projectName}</h1>
 
             <div className="grid grid-cols-2 gap-4">
                 <ProjectDescription description={project.description} />
+
+                <div></div>
+
+                <TasksList tasks={tasks} />
             </div>
         </div>
     )
