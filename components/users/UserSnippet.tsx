@@ -1,4 +1,4 @@
-import { Bars3Icon } from "@heroicons/react/24/outline"
+import { EllipsisVerticalIcon } from "@heroicons/react/24/outline";
 
 interface UserSnippetProps {
     name: string
@@ -6,17 +6,15 @@ interface UserSnippetProps {
     phone: string
 }
 
-const UserSnippet = ({ name, email, phone }: UserSnippetProps) => {
-    return (
-        <div className="grid w-full grid-cols-4 justify-items-center gap-4">
-            <div>{name}</div>
-            <div>{email}</div>
-            <div className="font-medium">{phone}</div>
-            <button>
-                <Bars3Icon className="size-6" />
-            </button>
-        </div>
-    )
-}
+const UserSnippet = ({name, email, phone} : UserSnippetProps) => {
+  return (
+    <div className="grid grid-cols-4 gap-4 justify-items-center w-full">
+      <div>{name}</div>
+      <div>{email}</div>
+      <div className="font-medium">{phone}</div>
+      <button><EllipsisVerticalIcon className="size-6"/></button>
+    </div>
+  );
+};
 
 export default UserSnippet
