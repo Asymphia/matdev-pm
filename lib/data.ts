@@ -1,4 +1,5 @@
-import { type ProjectStatus } from "@/app/projects/page"
+export type ProjectStatus = "To do" | "In progress" | "Completed"
+export type ProjectPriority = "Low" | "Medium" | "High"
 
 export type ProjectType = {
     id: number
@@ -10,10 +11,18 @@ export type ProjectType = {
     startDate: string
     deadline: string
     status: ProjectStatus
-    priority: "Low" | "Medium" | "High"
+    priority: ProjectPriority
     people: string[]
     budget: number
     amountSpent: number
+}
+
+export interface UserType {
+    id: number
+    firstName: string
+    secondName: string
+    email: string
+    phone: string
 }
 
 export const DUMMY_PROJECTS_DATA = [
@@ -629,3 +638,18 @@ export const DUMMY_TASKS_DATA = [
         requesterId: "Emma",
     },
 ] as TaskType[]
+
+export const DUMMY_USERS_DATA: UserType[] = [
+    { id: 1, firstName: "Jan", secondName: "Kowalski", email: "jan.kowalski@gmail.com", phone: "123-123-123" },
+    { id: 2, firstName: "Anna", secondName: "Nowak", email: "anna.nowak@gmail.com", phone: "222-333-444" },
+    { id: 3, firstName: "Piotr", secondName: "Wojcik", email: "piotr.wojcik@gmail.com", phone: "555-666-777" },
+    { id: 4, firstName: "Maria", secondName: "Kaminska", email: "maria.kaminska@gmail.com", phone: "888-999-111" },
+    { id: 5, firstName: "Tomasz", secondName: "Zielinski", email: "tomasz.zielinski@gmail.com", phone: "444-555-666" },
+    { id: 6, firstName: "Katarzyna", secondName: "Lewandowska", email: "k.lewandowska@gmail.com", phone: "777-111-222" },
+]
+
+export const PROJECT_STATUS_OPTIONS: ProjectStatus[] = ["To do", "In progress", "Completed"]
+export const PROJECT_PRIORITY_OPTIONS: ProjectPriority[] = ["Low", "Medium", "High"]
+export const PROJECT_TOPIC_OPTIONS = ["Authentication error", "Dashboard redesign", "API integration", "Payment failure", "UI performance", "User roles system"]
+export const PROJECT_ISSUE_TYPE_OPTIONS = ["Bug", "Feature", "Task", "Improvement"]
+export const PROJECT_WORKPACKAGE_OPTIONS = ["WP-01", "WP-02", "WP-03", "WP-04", "WP-05", "WP-06"]

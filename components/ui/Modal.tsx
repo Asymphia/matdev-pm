@@ -4,19 +4,21 @@ import { useRouter } from "next/navigation";
 import { ReactNode } from "react";
 import { createPortal } from "react-dom";
 
+interface ModalProps {
+  children: ReactNode;
+  href?: string;
+  additionalStyles?: boolean;
+  isOpen?: boolean;
+  onClick?: () => void;
+}
+
 const Modal = ({
   children,
   href = "",
   additionalStyles = true,
   isOpen = true,
   onClick,
-}: {
-  children: ReactNode;
-  href?: string;
-  additionalStyles?: boolean;
-  isOpen?: boolean;
-  onClick?: () => void;
-}) => {
+}: ModalProps) => {
   const router = useRouter();
 
   const onDismiss = () => {
