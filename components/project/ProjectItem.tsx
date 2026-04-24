@@ -6,7 +6,11 @@ import { type ProjectType } from "@/lib/data"
 import TextIcon from "@/components/ui/TextIcon"
 import Link from "next/link"
 
-const ProjectItem = ({ project }: { project: ProjectType }) => {
+interface ProjectItemProps {
+    project: ProjectType
+}
+
+const ProjectItem = ({ project }: ProjectItemProps) => {
     const start = new Date(project.startDate)
     const end = new Date(project.deadline)
 
