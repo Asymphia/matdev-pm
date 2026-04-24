@@ -1,6 +1,6 @@
 export type StatusItemType = "To do" | "Low" | "Completed" | "Medium" | "In progress" | "High" | "Cancelled"
 
-const StatusItem = ({ status }: { status: StatusItemType }) => {
+const StatusItem = ({ status, size = "small" }: { status: StatusItemType; size?: "big" | "small" }) => {
     let style
 
     if (status === "Low" || status === "Completed") {
@@ -13,7 +13,7 @@ const StatusItem = ({ status }: { status: StatusItemType }) => {
         style = "bg-text-primary-500/20 text-text-primary-500"
     }
 
-    return <div className={`w-fit rounded-full px-5 py-1 ${style}`}>{status}</div>
+    return <div className={`w-fit rounded-full ${size === "big" ? "px-7 py-2 text-lg" : "px-5 py-1"} ${style}`}>{status}</div>
 }
 
 export default StatusItem

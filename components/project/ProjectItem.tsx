@@ -5,6 +5,7 @@ import { calculateBudgetDiff, calculateTimeProgress } from "@/lib/projects-helpe
 import { type ProjectType } from "@/lib/data"
 import TextIcon from "@/components/ui/TextIcon"
 import Link from "next/link"
+import ProjectTags from "@/components/project/ProjectTags"
 
 interface ProjectItemProps {
     project: ProjectType
@@ -27,19 +28,7 @@ const ProjectItem = ({ project }: ProjectItemProps) => {
 
                 <div className="line-clamp-2">{project.description}</div>
 
-                <div className="grid grid-cols-3">
-                    <div className="justify-self-start">
-                        <TextIcon text={project.topic} Icon={HashtagIcon} />
-                    </div>
-
-                    <div className="justify-self-center">
-                        <TextIcon text={project.issueType} Icon={ExclamationTriangleIcon} />
-                    </div>
-
-                    <div className="justify-self-end">
-                        <TextIcon text={project.workpackage} Icon={BriefcaseIcon} />
-                    </div>
-                </div>
+                <ProjectTags topic={project.topic} workpackage={project.workpackage} issueType={project.issueType} />
 
                 <div className="flex flex-col gap-3">
                     <ProgressBar name="Budget" progress={calculateBudgetDiff(project.budget, project.amountSpent)} limit={project.amountSpent + "/" + project.budget} />
