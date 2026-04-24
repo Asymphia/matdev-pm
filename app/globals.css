@@ -5,6 +5,7 @@
 :root {
     color-scheme: light;
 
+    --text-primary-100: #aaa;
     --text-primary-300: #3d3d3d;
     --text-primary-500: #2d2d2d;
 
@@ -31,6 +32,7 @@
 [data-theme="dark"] {
     color-scheme: dark;
 
+    --text-primary-100: #777;
     --text-primary-300: #aaaaaa;
     --text-primary-500: #f7f7f7;
 
@@ -55,6 +57,7 @@
 }
 
 @theme inline {
+    --color-text-primary-100: var(--text-primary-100);
     --color-text-primary-300: var(--text-primary-300);
     --color-text-primary-500: var(--text-primary-500);
 

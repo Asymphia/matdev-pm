@@ -15,3 +15,7 @@ export const calculateTimeProgress = (startDate: Date, endDate: Date) => {
 
     return Math.round((elapsed / total) * 100)
 }
+
+export const formatNumber = (value: number) => {
+    return new Intl.NumberFormat("pl-PL").format(value)
+}
