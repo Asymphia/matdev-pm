@@ -19,10 +19,10 @@ const BudgetChart = () => {
     return (
         <BlockWrapper className="grid grid-cols-[1fr_2fr] gap-4">
             <div className="flex flex-col gap-7">
-                <header className="flex flex-nowrap items-center gap-4">
-                    <IconButton Icon={CreditCardIcon} onClick={() => {}} />
-
+                <header className="flex flex-nowrap items-center justify-between">
                     <h2>Budget</h2>
+
+                    <IconButton Icon={CreditCardIcon} onClick={() => {}} />
                 </header>
 
                 <div className="flex flex-col gap-3">

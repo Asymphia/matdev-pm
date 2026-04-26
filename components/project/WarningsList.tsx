@@ -14,7 +14,6 @@ const WarningsList = () => {
                     <tr>
                         <Th>Severity</Th>
                         <Th>Description</Th>
-                        <Th>{""}</Th>
                         <Th>Manage</Th>
                     </tr>
                 </thead>
@@ -28,7 +27,6 @@ const WarningsList = () => {
                                 </div>
                             </td>
                             <td>{data.description}</td>
-                            <td></td>
                             <td className="flex justify-center gap-2">
                                 <button className={`group transition ${data.isRead ? "cursor-default opacity-70" : ""}`}>
                                     <CheckIcon className={`text-text-primary-300 size-6 transition ${!data.isRead ? "group-hover:text-primary-700 group-active:text-primary-500" : ""}`} />

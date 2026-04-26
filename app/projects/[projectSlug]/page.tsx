@@ -5,6 +5,7 @@ import TasksList from "@/components/project/TasksList"
 import BudgetChart from "@/components/project/BudgetChart"
 import ProjectSidebar from "@/components/project/ProjectSidebar"
 import WarningsList from "@/components/project/WarningsList"
+import UserList from "@/components/project/UserList"
 
 const SingleProjectPage = async ({ params }: { params: Promise<{ projectSlug: string }> }) => {
     const { projectSlug } = await params
@@ -35,6 +36,8 @@ const SingleProjectPage = async ({ params }: { params: Promise<{ projectSlug: st
                     <BudgetChart />
 
                     <WarningsList />
+
+                    <UserList />
                 </div>
             </div>
         </div>
