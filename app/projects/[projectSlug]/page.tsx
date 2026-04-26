@@ -4,6 +4,7 @@ import ProjectDescription from "@/components/project/ProjectDescription"
 import TasksList from "@/components/project/TasksList"
 import BudgetChart from "@/components/project/BudgetChart"
 import ProjectSidebar from "@/components/project/ProjectSidebar"
+import WarningsList from "@/components/project/WarningsList"
 
 const SingleProjectPage = async ({ params }: { params: Promise<{ projectSlug: string }> }) => {
     const { projectSlug } = await params
@@ -32,6 +33,8 @@ const SingleProjectPage = async ({ params }: { params: Promise<{ projectSlug: st
 
                 <div className="flex flex-col gap-4">
                     <BudgetChart />
+
+                    <WarningsList />
                 </div>
             </div>
         </div>

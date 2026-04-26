@@ -25,6 +25,12 @@ export interface UserType {
     phone: string
 }
 
+export type WarningType = {
+    isRead: boolean
+    severity: ProjectPriority
+    description: string
+}
+
 export const DUMMY_PROJECTS_DATA = [
     {
         id: 1,
@@ -646,6 +652,34 @@ export const DUMMY_USERS_DATA: UserType[] = [
     { id: 4, firstName: "Maria", secondName: "Kaminska", email: "maria.kaminska@gmail.com", phone: "888-999-111" },
     { id: 5, firstName: "Tomasz", secondName: "Zielinski", email: "tomasz.zielinski@gmail.com", phone: "444-555-666" },
     { id: 6, firstName: "Katarzyna", secondName: "Lewandowska", email: "k.lewandowska@gmail.com", phone: "777-111-222" },
+]
+
+export const DUMMY_WARNING_DATA: WarningType[] = [
+    {
+        isRead: false,
+        severity: "Low",
+        description: "Minor delay in task, no impact on project timeline.",
+    },
+    {
+        isRead: false,
+        severity: "Medium",
+        description: "Risk of exceeding budget in the current project phase.",
+    },
+    {
+        isRead: false,
+        severity: "High",
+        description: "Integration bug may block key functionality.",
+    },
+    {
+        isRead: true,
+        severity: "High",
+        description: "Critical dependency failure affecting multiple modules.",
+    },
+    {
+        isRead: true,
+        severity: "Medium",
+        description: "Missing technical documentation for API module updates.",
+    },
 ]
 
 export const PROJECT_STATUS_OPTIONS: ProjectStatus[] = ["To do", "In progress", "Completed"]

@@ -26,7 +26,7 @@ const TasksList = ({ tasks }: { tasks: TaskType[] }) => {
         <BlockWrapper className="gap-5">
             <header className="flex flex-nowrap items-center justify-between">
                 <h2>Tasks</h2>
-                <div className="flex flex-nowrap items-center gap-4">
+                <div className="flex flex-nowrap items-center gap-2">
                     <IconButton Icon={PlusIcon} onClick={() => {}} />
                     <IconButton Icon={ArrowUpRightIcon} onClick={() => {}} />
                 </div>
