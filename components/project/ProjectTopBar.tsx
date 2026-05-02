@@ -11,12 +11,14 @@ interface ProjectTopBarProps {
 
 const ProjectTopBar = ({ current, setCurrent, onOpenModal }: ProjectTopBarProps) => {
     return (
-        <header className="flex min-w-0 flex-nowrap items-center justify-between">
+        <header className="grid grid-cols-3">
             <h1>Projects</h1>
 
-            <FilterButtons current={current} setCurrent={setCurrent} />
+            <div className="justify-self-center">
+                <FilterButtons current={current} setCurrent={setCurrent} />
+            </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 justify-self-end">
                 <IconButton Icon={PlusIcon} onClick={onOpenModal} />
                 <SearchBar />
             </div>

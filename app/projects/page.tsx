@@ -21,6 +21,7 @@ const ProjectsPage = () => {
                     <ProjectItem key={project.id} project={project} />
                 ))}
             </div>
+
             <ProjectFormModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
         </div>
     )

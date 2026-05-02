@@ -1,16 +1,20 @@
 import { TaskType } from "@/lib/data"
-import { ChevronRightIcon, EllipsisVerticalIcon } from "@heroicons/react/24/outline"
+import { ChevronRightIcon, EllipsisVerticalIcon, CheckIcon, XMarkIcon } from "@heroicons/react/24/outline"
 import StatusItem, { type StatusItemType } from "@/components/ui/StatusItem"
+import ProgressBar from "@/components/project/ProgressBar"
 
 interface TaskRowProps {
     task: TaskType
     isSubTask?: boolean
     isExpanded: boolean
     hasSubTasks: boolean
+    isMilestone?: boolean | null
+    category?: string | null
+    progress?: number | null
     onToggle: () => void
 }
 
-const TaskRow = ({ task, isSubTask = false, isExpanded, hasSubTasks, onToggle }: TaskRowProps) => {
+const TaskRow = ({ task, isSubTask = false, isExpanded, hasSubTasks, onToggle, category = null, progress = null, isMilestone = null }: TaskRowProps) => {
     return (
         <tr key={task.id}>
             <td className="text-center">
@@ -33,6 +37,17 @@ const TaskRow = ({ task, isSubTask = false, isExpanded, hasSubTasks, onToggle }:
                     <StatusItem status={task.status as StatusItemType} />
                 </div>
             </td>
+            {isMilestone !== null && (
+                <td>
+                    <div className="flex justify-center">{isMilestone ? <CheckIcon className="text-text-primary-300 size-6" /> : <XMarkIcon className="text-text-primary-300 size-6" />}</div>
+                </td>
+            )}
+            {category !== null && <td className="text-center">{task.taskCategory}</td>}
+            {progress !== null && (
+                <td className="text-center">
+                    <ProgressBar progress={progress} />
+                </td>
+            )}
             <td>
                 <button className="group flex w-full cursor-pointer justify-center">
                     <EllipsisVerticalIcon className="text-text-primary-300 group-hover:text-primary-700 group-active:text-primary-500 size-6 transition-all" />

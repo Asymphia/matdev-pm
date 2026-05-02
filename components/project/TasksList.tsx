@@ -8,29 +8,47 @@ import { PlusIcon, ArrowUpRightIcon } from "@heroicons/react/24/outline"
 import Th from "@/components/ui/Th"
 import TaskRow from "./TaskRow"
 import useTasksTree from "@/hooks/useTaskTree"
+import { useRouter } from "next/navigation"
 
-const TasksList = ({ tasks }: { tasks: TaskType[] }) => {
+const TasksList = ({ tasks, withDetails = false }: { tasks: TaskType[]; withDetails?: boolean }) => {
     const { mainTasks, getSubTasks, toggleExpand, isExpanded } = useTasksTree(tasks)
+    const router = useRouter()
 
     const renderRows = (task: TaskType, isSubTask = false): ReactNode[] => {
         const subTasks = getSubTasks(task.id)
         const expanded = isExpanded(task.id)
 
         return [
-            <TaskRow key={task.id} task={task} isSubTask={isSubTask} isExpanded={expanded} hasSubTasks={subTasks.length > 0} onToggle={() => toggleExpand(task.id)} />,
+            <TaskRow
+                key={task.id}
+                task={task}
+                isSubTask={isSubTask}
+                isExpanded={expanded}
+                hasSubTasks={subTasks.length > 0}
+                isMilestone={withDetails ? task.isMilestone : null}
+                category={withDetails ? task.taskCategory : null}
+                progress={withDetails ? task.progress : null}
+                onToggle={() => toggleExpand(task.id)}
+            />,
             ...(expanded ? subTasks.flatMap(sub => renderRows(sub, true)) : []),
         ]
     }
 
+    if (tasks.length === 0) {
+        return <BlockWrapper className="items-center">No tasks found</BlockWrapper>
+    }
+
     return (
         <BlockWrapper className="gap-5">
-            <header className="flex flex-nowrap items-center justify-between">
-                <h2>Tasks</h2>
-                <div className="flex flex-nowrap items-center gap-2">
-                    <IconButton Icon={PlusIcon} onClick={() => {}} />
-                    <IconButton Icon={ArrowUpRightIcon} onClick={() => {}} />
-                </div>
-            </header>
+            {!withDetails && (
+                <header className="flex flex-nowrap items-center justify-between">
+                    <h2>Tasks</h2>
+                    <div className="flex flex-nowrap items-center gap-2">
+                        <IconButton Icon={PlusIcon} onClick={() => {}} />
+                        <IconButton Icon={ArrowUpRightIcon} onClick={() => router.push(`/projects/${tasks[0].projectId}/tasks`)} />
+                    </div>
+                </header>
+            )}
 
             <table className="w-full border-separate border-spacing-y-4">
                 <thead>
@@ -40,6 +58,13 @@ const TasksList = ({ tasks }: { tasks: TaskType[] }) => {
                         <Th>Deadline</Th>
                         <Th>Priority</Th>
                         <Th>Status</Th>
+                        {withDetails && (
+                            <>
+                                <Th>Is milestone?</Th>
+                                <Th>Category</Th>
+                                <Th>Progress</Th>
+                            </>
+                        )}
                         <Th>Manage</Th>
                     </tr>
                 </thead>
