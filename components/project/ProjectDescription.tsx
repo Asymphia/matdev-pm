@@ -3,9 +3,9 @@ import ProjectTags from "@/components/project/ProjectTags"
 
 interface ProjectDescriptionProps {
     description: string
-    topic: string
-    issueType: string
-    workpackage: string
+    topic?: string
+    issueType?: string
+    workpackage?: string
 }
 
 const ProjectDescription = ({ description, topic, issueType, workpackage }: ProjectDescriptionProps) => {
@@ -15,7 +15,7 @@ const ProjectDescription = ({ description, topic, issueType, workpackage }: Proj
 
             <p>{description}</p>
 
-            <ProjectTags topic={topic} issueType={issueType} workpackage={workpackage} size="big" />
+            {topic && issueType && workpackage && <ProjectTags topic={topic} issueType={issueType} workpackage={workpackage} size="big" />}
         </BlockWrapper>
     )
 }

@@ -1,7 +1,8 @@
 import { TaskType } from "@/lib/data"
-import { ChevronRightIcon, EllipsisVerticalIcon, CheckIcon, XMarkIcon } from "@heroicons/react/24/outline"
+import { ChevronRightIcon, EllipsisVerticalIcon, CheckIcon, XMarkIcon, ArrowUpRightIcon } from "@heroicons/react/24/outline"
 import StatusItem, { type StatusItemType } from "@/components/ui/StatusItem"
 import ProgressBar from "@/components/project/ProgressBar"
+import Link from "next/link"
 
 interface TaskRowProps {
     task: TaskType
@@ -11,10 +12,11 @@ interface TaskRowProps {
     isMilestone?: boolean | null
     category?: string | null
     progress?: number | null
+    href?: string | null
     onToggle: () => void
 }
 
-const TaskRow = ({ task, isSubTask = false, isExpanded, hasSubTasks, onToggle, category = null, progress = null, isMilestone = null }: TaskRowProps) => {
+const TaskRow = ({ task, isSubTask = false, isExpanded, hasSubTasks, onToggle, category = null, progress = null, isMilestone = null, href = null }: TaskRowProps) => {
     return (
         <tr key={task.id}>
             <td className="text-center">
@@ -53,6 +55,13 @@ const TaskRow = ({ task, isSubTask = false, isExpanded, hasSubTasks, onToggle, c
                     <EllipsisVerticalIcon className="text-text-primary-300 group-hover:text-primary-700 group-active:text-primary-500 size-6 transition-all" />
                 </button>
             </td>
+            {href !== null && (
+                <td>
+                    <Link href={href} className="group flex w-full justify-center">
+                        <ArrowUpRightIcon className="text-text-primary-300 group-hover:text-primary-700 group-active:text-primary-500 size-5 transition-all" />
+                    </Link>
+                </td>
+            )}
         </tr>
     )
 }

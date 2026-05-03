@@ -29,6 +29,7 @@ const TasksList = ({ tasks, withDetails = false }: { tasks: TaskType[]; withDeta
                 category={withDetails ? task.taskCategory : null}
                 progress={withDetails ? task.progress : null}
                 onToggle={() => toggleExpand(task.id)}
+                href={withDetails ? `/projects/${task.projectId}/tasks/${task.id}` : null}
             />,
             ...(expanded ? subTasks.flatMap(sub => renderRows(sub, true)) : []),
         ]
@@ -66,6 +67,7 @@ const TasksList = ({ tasks, withDetails = false }: { tasks: TaskType[]; withDeta
                             </>
                         )}
                         <Th>Manage</Th>
+                        {withDetails && <Th>Open</Th>}
                     </tr>
                 </thead>
                 <tbody>{mainTasks.map(task => renderRows(task))}</tbody>

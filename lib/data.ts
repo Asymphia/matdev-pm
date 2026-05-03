@@ -189,8 +189,8 @@ export type TaskType = {
     projectId: number
     name: string
     description: string
-    status: string
-    priority: string
+    status: ProjectStatus
+    priority: ProjectPriority
     isMilestone: boolean
     startDate: string
     endDate: string
