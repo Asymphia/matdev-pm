@@ -1,26 +1,9 @@
-"use client"
+import UsersPageClient from "@/components/users/UsersPageClient"
+import { fetchMatdevUsers } from "@/lib/server/matdev-users"
 
-import BlockWrapper from "@/components/ui/BlockWrapper"
-import { DUMMY_USERS_DATA } from "@/lib/data"
-import UserFormModal from "@/components/users/UserFormModal"
-import UsersTable from "@/components/users/UsersTable"
-import UsersTopBar from "@/components/users/UsersTopBar"
-import { useState } from "react"
-
-const UsersPage = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false)
-
-  return (
-    <div className="flex flex-col gap-11 w-full h-full">
-      <div className="w-full">
-        <UsersTopBar onOpenModal={() => setIsModalOpen(true)} />
-      </div>
-      <BlockWrapper>
-        <UsersTable users={DUMMY_USERS_DATA} />
-      </BlockWrapper>
-      <UserFormModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
-    </div>
-  )
+const UsersPage = async () => {
+    const { users, error } = await fetchMatdevUsers()
+    return <UsersPageClient initialUsers={users} loadError={error} />
 }
 
 export default UsersPage

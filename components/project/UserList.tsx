@@ -2,11 +2,20 @@
 
 import BlockWrapper from "@/components/ui/BlockWrapper"
 import Th from "@/components/ui/Th"
-import { DUMMY_USERS_DATA } from "@/lib/data"
+import { DUMMY_USERS_DATA, type UserType } from "@/lib/data"
 import { PlusIcon, EllipsisVerticalIcon, CheckIcon } from "@heroicons/react/24/outline"
 import IconButton from "@/components/ui/IconButton"
 
-const UserList = () => {
+type ProjectUser = UserType & {
+    isResponsible?: boolean
+    role?: "Responsible" | "Support" | "Member"
+}
+
+interface UserListProps {
+    users?: ProjectUser[]
+}
+
+const UserList = ({ users = DUMMY_USERS_DATA }: UserListProps) => {
     return (
         <BlockWrapper className="flex flex-col gap-5">
             <header className="flex flex-nowrap items-center justify-between">
@@ -21,20 +30,21 @@ const UserList = () => {
                         <Th>Name</Th>
                         <Th>Surname</Th>
                         <Th>E-mail</Th>
-                        <Th>Is responsible</Th>
+                        <Th>Role</Th>
                         <Th>Manage</Th>
                     </tr>
                 </thead>
 
                 <tbody>
-                    {DUMMY_USERS_DATA.map((user, index) => (
-                        <tr key={index}>
+                    {users.map(user => (
+                        <tr key={user.id}>
                             <td className="text-center">{user.firstName}</td>
                             <td className="text-center">{user.secondName}</td>
                             <td className="text-center">{user.email}</td>
                             <td className="text-center">
-                                <div className="flex justify-center">
-                                    <CheckIcon className="text-text-primary-300 size-6" />
+                                <div className="flex justify-center items-center gap-2">
+                                    {user.isResponsible ? <CheckIcon className="text-text-primary-300 size-5" /> : null}
+                                    <span>{user.role ?? "Member"}</span>
                                 </div>
                             </td>
                             <td>

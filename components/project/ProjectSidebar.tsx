@@ -9,16 +9,17 @@ import { ProjectStatus } from "@/lib/data"
 interface ProjectSidebarProps {
     status: ProjectStatus
     deadline: string
+    onEdit?: () => void
 }
 
-const ProjectSidebar = ({ status, deadline }: ProjectSidebarProps) => {
+const ProjectSidebar = ({ status, deadline, onEdit }: ProjectSidebarProps) => {
     return (
         <div className="flex items-center gap-2">
             <StatusItem status={status} size="big" />
 
             <ProjectDeadline deadline={deadline} />
 
-            <IconButton Icon={PencilIcon} onClick={() => {}} />
+            <IconButton Icon={PencilIcon} onClick={() => onEdit?.()} />
         </div>
     )
 }

@@ -1,25 +1,31 @@
-import { DUMMY_PROJECTS_DATA, DUMMY_TASKS_DATA } from "@/lib/data"
 import { notFound } from "next/navigation"
 import ProjectSidebar from "@/components/project/ProjectSidebar"
 import ProjectDescription from "@/components/project/ProjectDescription"
 import TaskDetails from "@/components/task/TaskDetails"
 import TaskContent from "@/components/task/TaskContent"
+import { fetchMatdevProjectById, fetchMatdevTasksForProject } from "@/lib/server/matdev-projects"
 
-const TaskPage = async ({ params }: { params: { projectSlug: string; taskSlug: string } }) => {
+const TaskPage = async ({ params }: { params: Promise<{ projectSlug: string; taskSlug: string }> }) => {
     const { projectSlug, taskSlug } = await params
-    const project = DUMMY_PROJECTS_DATA.find(project => project.id === Number(projectSlug))
+    const projectId = Number(projectSlug)
+    const taskId = Number(taskSlug)
+    if (!Number.isFinite(projectId) || !Number.isFinite(taskId)) {
+        notFound()
+    }
+
+    const [{ project }, { tasks }] = await Promise.all([fetchMatdevProjectById(projectId), fetchMatdevTasksForProject(projectId)])
 
     if (!project) {
         notFound()
     }
 
-    const task = DUMMY_TASKS_DATA.find(task => task.projectId === project.id && task.id === Number(taskSlug))
+    const task = tasks.find(t => t.id === taskId)
 
     if (!task) {
         notFound()
     }
 
-    const subTasks = DUMMY_TASKS_DATA.filter(t => t.parentId === task.id)
+    const subTasks = tasks.filter(t => t.parentId === task.id)
 
     return (
         <div className="flex h-full w-full flex-col gap-11">

@@ -1,21 +1,21 @@
 import FilterButtons from "@/components/project/FilterButtons"
-import { ProjectStatus } from "@/lib/data"
 import IconButton from "@/components/ui/IconButton"
 import { PlusIcon } from "@heroicons/react/24/outline"
 import SearchBar from "@/components/ui/SearchBar"
 interface ProjectTopBarProps {
-    current: ProjectStatus | null
-    setCurrent: (val: ProjectStatus | null) => void
+    statusOptions: string[]
+    current: string | null
+    setCurrent: (val: string | null) => void
     onOpenModal: () => void
 }
 
-const ProjectTopBar = ({ current, setCurrent, onOpenModal }: ProjectTopBarProps) => {
+const ProjectTopBar = ({ statusOptions, current, setCurrent, onOpenModal }: ProjectTopBarProps) => {
     return (
         <header className="grid grid-cols-3">
             <h1>Projects</h1>
 
             <div className="justify-self-center">
-                <FilterButtons current={current} setCurrent={setCurrent} />
+                <FilterButtons options={statusOptions} current={current} setCurrent={setCurrent} />
             </div>
 
             <div className="flex items-center gap-3 justify-self-end">

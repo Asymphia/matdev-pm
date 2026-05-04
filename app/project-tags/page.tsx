@@ -1,48 +1,16 @@
-"use client"
+import ProjectTagsPageClient from "@/components/project-tags/ProjectTagsPageClient"
+import { fetchTagCollections } from "@/lib/server/matdev-tags"
 
-import { Tag } from "@/components/project-tags/TagItem"
-import TagsCard, { TagsCardProps } from "@/components/project-tags/TagsCard"
-
-const TagsPage = () => {
+const TagsPage = async () => {
+    const { data, error } = await fetchTagCollections()
     return (
-        <div className="flex flex-1 flex-col gap-11">
-            <h1>Project Tags</h1>
-
-            <div className="grid flex-1 grid-cols-3 items-stretch gap-10">
-                <TagsCard title={DUMMY_TAGCARDS_DATA.title} tags={DUMMY_TAGCARDS_DATA.tags} />
-                <TagsCard title={DUMMY_TAGCARDS_DATA.title} tags={DUMMY_TAGCARDS_DATA.tags} />
-                <TagsCard title={DUMMY_TAGCARDS_DATA.title} tags={DUMMY_TAGCARDS_DATA.tags} />
-            </div>
-        </div>
+        <ProjectTagsPageClient
+            issues={data.issues}
+            topics={data.topics}
+            workpackages={data.workpackages}
+            loadError={error}
+        />
     )
 }
 
 export default TagsPage
-
-const DUMMY_TAGS_DATA: Tag[] = [
-    {
-        tagId: 1,
-        tagName: "lorem ipsum",
-        onClick: () => {},
-    },
-    {
-        tagId: 2,
-        tagName: "lorem ipsum",
-        onClick: () => {},
-    },
-    {
-        tagId: 3,
-        tagName: "lorem ipsum solor ech damet",
-        onClick: () => {},
-    },
-    {
-        tagId: 4,
-        tagName: "lorem ipsum",
-        onClick: () => {},
-    },
-]
-
-const DUMMY_TAGCARDS_DATA: TagsCardProps = {
-    title: "Workspaces",
-    tags: DUMMY_TAGS_DATA,
-}

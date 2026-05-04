@@ -6,6 +6,8 @@ import BlockWrapper from "@/components/ui/BlockWrapper"
 export type TagsCardProps = {
     title: string
     tags: Tag[]
+    onAdd: () => void
+    addDisabled?: boolean
 }
 
 const TagsCard = (tagsData: TagsCardProps) => {
@@ -13,11 +15,11 @@ const TagsCard = (tagsData: TagsCardProps) => {
         <BlockWrapper className="w-full">
             <div className="flex flex-row justify-between">
                 <h2 className="mb-5 text-4xl font-normal">{tagsData.title}</h2>
-                <IconButton Icon={PlusIcon} onClick={() => {}} />
+                <IconButton Icon={PlusIcon} onClick={tagsData.onAdd} disabled={tagsData.addDisabled} />
             </div>
             <div className="mr-2.5 flex flex-col gap-2">
-                {tagsData.tags.map((tag, index) => (
-                    <TagItem tagId={tag.tagId} tagName={tag.tagName} onClick={tag.onClick} key={index} />
+                {tagsData.tags.map(tag => (
+                    <TagItem tagId={tag.tagId} tagName={tag.tagName} onClick={tag.onClick} key={tag.tagId} />
                 ))}
             </div>
         </BlockWrapper>

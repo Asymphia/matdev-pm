@@ -15,6 +15,14 @@ export type ProjectType = {
     people: string[]
     budget: number
     amountSpent: number
+    topicId?: number | null
+    statusId?: number | null
+    priorityId?: number | null
+    issuetypeId?: number | null
+    respPeronId?: number | null
+    suppPersonId?: number | null
+    workpackageId?: number | null
+    rawStatusName?: string | null
 }
 
 export interface UserType {
