@@ -43,7 +43,7 @@ const TaskPage = async ({ params }: { params: Promise<{ projectSlug: string; tas
                 <TaskDetails task={task} />
             </div>
 
-            <TaskContent tasks={subTasks} />
+            <TaskContent tasks={subTasks} projectId={task.projectId} />
         </div>
     )
 }

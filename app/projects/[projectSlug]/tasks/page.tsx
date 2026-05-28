@@ -26,7 +26,7 @@ const TasksPage = async ({ params }: { params: Promise<{ projectSlug: string }> 
                 <ProjectSidebar status={project.status} deadline={project.deadline} />
             </header>
 
-            <TaskContent tasks={tasks} />
+            <TaskContent tasks={tasks} projectId={id} />
         </div>
     )
 }
