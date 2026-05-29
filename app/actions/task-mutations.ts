@@ -121,3 +121,79 @@ export async function createMatdevTaskQuick(projectId: number): Promise<CreateTa
         description: "Utworzone z szybkiego przycisku +",
     })
 }
+
+/** Backend task DateTime fields require UTC ISO strings (Npgsql timestamptz). */
+function toIsoDatetime(date: string | null | undefined): string | null {
+    if (!date) return null
+    if (date.includes("T")) return date
+    return `${date}T00:00:00Z`
+}
+
+async function parseError(res: Response): Promise<string> {
+    let message = `HTTP ${res.status}`
+    try {
+        const j = (await res.json()) as { message?: string; errors?: Record<string, string[]> }
+        if (j.message) message = j.message
+        if (j.errors && typeof j.errors === "object") {
+            const parts = Object.entries(j.errors).flatMap(([k, v]) => (Array.isArray(v) ? v.map(x => `${k}: ${x}`) : []))
+            if (parts.length) message = parts.join("; ")
+        }
+    } catch {
+        // keep default
+    }
+    return message
+}
+
+export type TaskActionResult = { ok: true } | { ok: false; error: string }
+
+export async function deleteTask(projectId: number, taskId: number): Promise<TaskActionResult> {
+    try {
+        const res = await matdevFetch(`/api/project/${projectId}/task-list/${taskId}`, { method: "DELETE" })
+        if (res.ok) return { ok: true }
+        return { ok: false, error: await parseError(res) }
+    } catch (e) {
+        return { ok: false, error: e instanceof Error ? e.message : "Unknown error" }
+    }
+}
+
+export async function changeTaskStatus(projectId: number, taskId: number, taskStatusId: number): Promise<TaskActionResult> {
+    try {
+        const res = await matdevFetch(`/api/project/${projectId}/task-list/${taskId}/status`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ taskStatusId }),
+        })
+        if (res.ok) return { ok: true }
+        return { ok: false, error: await parseError(res) }
+    } catch (e) {
+        return { ok: false, error: e instanceof Error ? e.message : "Unknown error" }
+    }
+}
+
+export async function changeTaskPriority(projectId: number, taskId: number, taskPriorityId: number): Promise<TaskActionResult> {
+    try {
+        const res = await matdevFetch(`/api/project/${projectId}/task-list/${taskId}/priority`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ taskPriorityId }),
+        })
+        if (res.ok) return { ok: true }
+        return { ok: false, error: await parseError(res) }
+    } catch (e) {
+        return { ok: false, error: e instanceof Error ? e.message : "Unknown error" }
+    }
+}
+
+export async function changeTaskDeadline(projectId: number, taskId: number, endDate: string): Promise<TaskActionResult> {
+    try {
+        const res = await matdevFetch(`/api/project/${projectId}/task-list/${taskId}/deadline`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ endDate: toIsoDatetime(endDate) }),
+        })
+        if (res.ok) return { ok: true }
+        return { ok: false, error: await parseError(res) }
+    } catch (e) {
+        return { ok: false, error: e instanceof Error ? e.message : "Unknown error" }
+    }
+}

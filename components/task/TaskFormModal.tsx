@@ -60,19 +60,19 @@ const TaskFormModal = ({ isOpen, onClose, onCreated, projectId }: TaskFormModalP
             .filter(v => Number.isFinite(v) && v > 0)
 
         if (!name) {
-            setSubmitError("Nazwa zadania jest wymagana.")
+            setSubmitError("Task name is required.")
             return
         }
         if (!description) {
-            setSubmitError("Opis zadania jest wymagany.")
+            setSubmitError("Task description is required.")
             return
         }
         if (!statusId || !priorityId) {
-            setSubmitError("Wybierz status i priorytet.")
+            setSubmitError("Please select a status and priority.")
             return
         }
         if (!startDateRaw) {
-            setSubmitError("Data startu jest wymagana.")
+            setSubmitError("Start date is required.")
             return
         }
 
@@ -98,8 +98,8 @@ const TaskFormModal = ({ isOpen, onClose, onCreated, projectId }: TaskFormModalP
     }
 
     return (
-        <FormModalShell isOpen={isOpen} title="Nowe zadanie" onClose={onClose}>
-            {lookupsError ? <p className="text-error mb-4 text-sm">Nie załadowano słowników: {lookupsError}</p> : null}
+        <FormModalShell isOpen={isOpen} title="New task" onClose={onClose}>
+            {lookupsError ? <p className="text-error mb-4 text-sm">Failed to load form data: {lookupsError}</p> : null}
             {submitError ? <p className="text-error mb-4 text-sm">{submitError}</p> : null}
             <form
                 className="flex flex-col gap-4"
@@ -109,7 +109,7 @@ const TaskFormModal = ({ isOpen, onClose, onCreated, projectId }: TaskFormModalP
                 }}
             >
                 <FormField icon={PencilSquareIcon}>
-                    <input name="name" required placeholder="Nazwa zadania" className={formFieldClasses} disabled={pending} />
+                    <input name="name" required placeholder="Task name" className={formFieldClasses} disabled={pending} />
                 </FormField>
 
                 <div className="grid grid-cols-2 gap-4">
@@ -163,7 +163,7 @@ const TaskFormModal = ({ isOpen, onClose, onCreated, projectId }: TaskFormModalP
                     </FormField>
                     <FormField icon={PencilSquareIcon} isSelect>
                         <select name="taskCategoryId" className={formFieldClasses} disabled={pending || !lookups || !lookups.ok}>
-                            <option value="">— Kategoria —</option>
+                            <option value="">— Category —</option>
                             {lookups?.ok
                                 ? lookups.data.taskCategories.map(c => (
                                       <option key={c.id} value={c.id}>
@@ -175,17 +175,20 @@ const TaskFormModal = ({ isOpen, onClose, onCreated, projectId }: TaskFormModalP
                     </FormField>
                 </div>
 
-                <FormField icon={UserIcon} isSelect>
-                    <select name="assignedUserIds" multiple className={formFieldClasses} disabled={pending || !lookups || !lookups.ok}>
-                        {lookups?.ok
-                            ? lookups.data.users.map(u => (
-                                  <option key={`a-${u.userId}`} value={u.userId}>
-                                      {u.firstName} {u.lastName}
-                                  </option>
-                              ))
-                            : null}
-                    </select>
-                </FormField>
+                <div className="flex flex-col gap-1">
+                    <span className="text-sm font-medium">Assigned users <span className="text-muted-foreground font-normal">(hold Ctrl / Cmd to select multiple)</span></span>
+                    <FormField icon={UserIcon} isSelect>
+                        <select name="assignedUserIds" multiple className={formFieldClasses} disabled={pending || !lookups || !lookups.ok}>
+                            {lookups?.ok
+                                ? lookups.data.users.map(u => (
+                                      <option key={`a-${u.userId}`} value={u.userId}>
+                                          {u.firstName} {u.lastName}
+                                      </option>
+                                  ))
+                                : null}
+                        </select>
+                    </FormField>
+                </div>
 
                 <label className="flex items-center gap-2 text-sm">
                     <input name="isMilestone" type="checkbox" disabled={pending} />
@@ -198,7 +201,7 @@ const TaskFormModal = ({ isOpen, onClose, onCreated, projectId }: TaskFormModalP
                         name="description"
                         rows={4}
                         required
-                        placeholder="Opis"
+                        placeholder="Description"
                         disabled={pending}
                         className="border-border w-full resize-none rounded-md border bg-transparent py-3 pr-4 pl-10"
                     />
@@ -206,10 +209,10 @@ const TaskFormModal = ({ isOpen, onClose, onCreated, projectId }: TaskFormModalP
 
                 <div className="mt-4 flex justify-end gap-3">
                     <button type="button" onClick={onClose} className="border-border cursor-pointer rounded-md border px-4 py-2 text-sm" disabled={pending}>
-                        Anuluj
+                        Cancel
                     </button>
                     <button type="submit" className="cursor-pointer rounded-md bg-[#2D3748] px-6 py-2 text-sm text-white disabled:opacity-50" disabled={pending}>
-                        {pending ? "Dodaję..." : "Dodaj zadanie"}
+                        {pending ? "Adding..." : "Add task"}
                     </button>
                 </div>
             </form>

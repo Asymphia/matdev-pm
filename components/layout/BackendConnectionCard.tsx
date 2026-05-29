@@ -50,7 +50,7 @@ const BackendConnectionCard = ({ initialPing, initialProjects }: Props) => {
                     <dt className="text-text-primary-300">GET /api/project</dt>
                     <dd>
                         {projects.ok ? (
-                            <span className="text-green-700 dark:text-green-400">OK · {projects.projectCount} projektów</span>
+                            <span className="text-green-700 dark:text-green-400">OK · {projects.projectCount} projects</span>
                         ) : (
                             <span className="text-red-700 dark:text-red-400">
                                 {projects.error}

@@ -1,4 +1,5 @@
 export const calculateBudgetDiff = (budget: number, amountSpent: number) => {
+    if (!budget || budget <= 0) return amountSpent > 0 ? 100 : 0
     return (amountSpent / budget) * 100
 }
 
@@ -7,6 +8,7 @@ export const calculateTimeProgress = (startDate: Date, endDate: Date) => {
     const start = new Date(startDate).getTime()
     const end = new Date(endDate).getTime()
 
+    if (isNaN(start) || isNaN(end) || end <= start) return 0
     if (now <= start) return 0
     if (now >= end) return 100
 
@@ -17,5 +19,5 @@ export const calculateTimeProgress = (startDate: Date, endDate: Date) => {
 }
 
 export const formatNumber = (value: number) => {
-    return new Intl.NumberFormat("pl-PL").format(value)
+    return new Intl.NumberFormat("en-GB").format(value)
 }

@@ -38,29 +38,68 @@ function mapUserList(raw: unknown): ProjectCreateLookups["users"] {
         .filter((x): x is NonNullable<typeof x> => x != null)
 }
 
-export async function fetchProjectCreateLookups(): Promise<{ lookups: ProjectCreateLookups | null; error: string | null }> {
+/** Fetch project create/edit lookups from individual endpoints that actually exist. */
+export async function fetchProjectCreateLookups(projectId?: number): Promise<{ lookups: ProjectCreateLookups | null; error: string | null }> {
     try {
-        const res = await matdevFetch("/api/project/lookups/for-create")
-        if (!res.ok) {
-            return { lookups: null, error: `Słowniki: HTTP ${res.status}` }
+        // Fetch issuetypes, topics, workpackages and users in parallel — all have standalone GET endpoints
+        const [issueRes, topicRes, workpackageRes, userRes] = await Promise.all([
+            matdevFetch("/api/issuetype"),
+            matdevFetch("/api/topic"),
+            matdevFetch("/api/workpackage"),
+            matdevFetch("/api/user"),
+        ])
+
+        type NamedApiItem = { issueTypeId?: number; topicId?: number; workpackageId?: number; id?: number; name: string }
+        type UserApiItem = { userId: number; firstName?: string; lastName?: string }
+
+        const issueJson = issueRes.ok ? ((await issueRes.json()) as ApiResponseModel<NamedApiItem[]>) : { data: [] }
+        const topicJson = topicRes.ok ? ((await topicRes.json()) as ApiResponseModel<NamedApiItem[]>) : { data: [] }
+        const wpJson = workpackageRes.ok ? ((await workpackageRes.json()) as ApiResponseModel<NamedApiItem[]>) : { data: [] }
+        const userJson = userRes.ok ? ((await userRes.json()) as ApiResponseModel<UserApiItem[]>) : { data: [] }
+
+        // Statuses and priorities — try the task-list create-form from a specific or any project
+        let statuses: ProjectCreateLookups["statuses"] = []
+        let priorities: ProjectCreateLookups["priorities"] = []
+
+        const formProjectId = projectId ?? await getFirstProjectId()
+        if (formProjectId) {
+            const formRes = await matdevFetch(`/api/project/${formProjectId}/task-list/create-form`)
+            if (formRes.ok) {
+                const formJson = (await formRes.json()) as ApiResponseModel<{ statuses?: { id: number; name: string }[]; priorities?: { id: number; name: string }[] }>
+                statuses = mapLookupList(formJson.data?.statuses)
+                priorities = mapLookupList(formJson.data?.priorities)
+            }
         }
-        const json = (await res.json()) as ApiResponseModel<Record<string, unknown>>
-        const d = json.data
-        if (!d || typeof d !== "object") {
-            return { lookups: null, error: "Słowniki: pusta odpowiedź" }
-        }
+
         const lookups: ProjectCreateLookups = {
-            issueTypes: mapLookupList(d.issueTypes),
-            topics: mapLookupList(d.topics),
-            workpackages: mapLookupList(d.workpackages),
-            statuses: mapLookupList(d.statuses),
-            priorities: mapLookupList(d.priorities),
-            users: mapUserList(d.users),
+            issueTypes: (issueJson.data ?? []).map(i => ({ id: (i as { issueTypeId: number }).issueTypeId, name: i.name })).filter(x => x.id),
+            topics: (topicJson.data ?? []).map(t => ({ id: (t as { topicId: number }).topicId, name: t.name })).filter(x => x.id),
+            workpackages: (wpJson.data ?? []).map(w => ({ id: (w as { workpackageId: number }).workpackageId, name: w.name })).filter(x => x.id),
+            statuses,
+            priorities,
+            users: (userJson.data ?? []).map(u => ({
+                id: u.userId,
+                firstName: u.firstName ?? "",
+                lastName: u.lastName ?? "",
+                displayName: `${u.firstName ?? ""} ${u.lastName ?? ""}`.trim(),
+            })),
         }
         return { lookups, error: null }
     } catch (e) {
         const message = e instanceof Error ? e.message : "Unknown error"
         return { lookups: null, error: message }
+    }
+}
+
+async function getFirstProjectId(): Promise<number | null> {
+    try {
+        const res = await matdevFetch("/api/project")
+        if (!res.ok) return null
+        const json = (await res.json()) as ApiResponseModel<Array<{ projectId: number }>>
+        const first = json.data?.[0]
+        return first?.projectId ?? null
+    } catch {
+        return null
     }
 }
 

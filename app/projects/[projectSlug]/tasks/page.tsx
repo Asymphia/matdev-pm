@@ -1,7 +1,8 @@
 import { notFound } from "next/navigation"
-import ProjectSidebar from "@/components/project/ProjectSidebar"
 import TaskContent from "@/components/task/TaskContent"
-import { fetchMatdevProjectById, fetchMatdevTasksForProject } from "@/lib/server/matdev-projects"
+import TasksPageHeader from "@/components/task/TasksPageHeader"
+import { fetchMatdevProjectById, fetchMatdevTasksForProject, fetchProjectCreateLookups } from "@/lib/server/matdev-projects"
+import { enrichProjectWithLookups } from "@/lib/matdev-project-map"
 
 const TasksPage = async ({ params }: { params: Promise<{ projectSlug: string }> }) => {
     const { projectSlug } = await params
@@ -10,20 +11,26 @@ const TasksPage = async ({ params }: { params: Promise<{ projectSlug: string }> 
         notFound()
     }
 
-    const [{ project }, { tasks }] = await Promise.all([fetchMatdevProjectById(id), fetchMatdevTasksForProject(id)])
+    const [{ project }, { tasks }, { lookups }] = await Promise.all([
+        fetchMatdevProjectById(id),
+        fetchMatdevTasksForProject(id),
+        fetchProjectCreateLookups(id),
+    ])
 
     if (!project) {
         notFound()
     }
 
+    const enrichedProject = enrichProjectWithLookups(project, lookups)
+
     return (
         <div className="flex h-full w-full flex-col gap-11">
             <header className="flex items-center justify-between">
                 <h1>
-                    {project.projectName} <span className="font-normal">/ Tasks</span>
+                    {enrichedProject.projectName} <span className="font-normal">/ Tasks</span>
                 </h1>
 
-                <ProjectSidebar status={project.status} deadline={project.deadline} />
+                <TasksPageHeader project={enrichedProject} lookups={lookups} />
             </header>
 
             <TaskContent tasks={tasks} projectId={id} />

@@ -6,11 +6,36 @@ import { TaskType } from "@/lib/data"
 import IconButton from "@/components/ui/IconButton"
 import { PlusIcon, ArrowUpRightIcon } from "@heroicons/react/24/outline"
 import Th from "@/components/ui/Th"
-import TaskRow from "./TaskRow"
+import TaskRow, { type LookupOption } from "./TaskRow"
 import useTasksTree from "@/hooks/useTaskTree"
 import { useRouter } from "next/navigation"
 
-const TasksList = ({ tasks, withDetails = false }: { tasks: TaskType[]; withDetails?: boolean }) => {
+
+interface TasksListProps {
+    tasks: TaskType[]
+    withDetails?: boolean
+    onAdd?: () => void
+    onDelete?: (taskId: number) => void
+    onStatusChange?: (taskId: number, statusId: number, statusName: string) => void
+    onPriorityChange?: (taskId: number, priorityId: number, priorityName: string) => void
+    onDeadlineChange?: (taskId: number, currentDeadline: string) => void
+    statusOptions?: LookupOption[]
+    priorityOptions?: LookupOption[]
+    actionPending?: boolean
+}
+
+const TasksList = ({
+    tasks,
+    withDetails = false,
+    onAdd,
+    onDelete,
+    onStatusChange,
+    onPriorityChange,
+    onDeadlineChange,
+    statusOptions = [],
+    priorityOptions = [],
+    actionPending,
+}: TasksListProps) => {
     const { mainTasks, getSubTasks, toggleExpand, isExpanded } = useTasksTree(tasks)
     const router = useRouter()
 
@@ -27,9 +52,16 @@ const TasksList = ({ tasks, withDetails = false }: { tasks: TaskType[]; withDeta
                 hasSubTasks={subTasks.length > 0}
                 isMilestone={withDetails ? task.isMilestone : null}
                 category={withDetails ? task.taskCategory : null}
-                progress={withDetails ? task.progress : null}
+                progress={withDetails ? (task.progress ?? 0) : null}
                 onToggle={() => toggleExpand(task.id)}
                 href={withDetails ? `/projects/${task.projectId}/tasks/${task.id}` : null}
+                onDelete={onDelete}
+                onStatusChange={onStatusChange}
+                onPriorityChange={onPriorityChange}
+                onDeadlineChange={onDeadlineChange}
+                statusOptions={statusOptions}
+                priorityOptions={priorityOptions}
+                actionPending={actionPending}
             />,
             ...(expanded ? subTasks.flatMap(sub => renderRows(sub, true)) : []),
         ]
@@ -45,7 +77,7 @@ const TasksList = ({ tasks, withDetails = false }: { tasks: TaskType[]; withDeta
                 <header className="flex flex-nowrap items-center justify-between">
                     <h2>Tasks</h2>
                     <div className="flex flex-nowrap items-center gap-2">
-                        <IconButton Icon={PlusIcon} onClick={() => {}} />
+                        <IconButton Icon={PlusIcon} onClick={() => onAdd?.()} />
                         <IconButton Icon={ArrowUpRightIcon} onClick={() => router.push(`/projects/${tasks[0].projectId}/tasks`)} />
                     </div>
                 </header>

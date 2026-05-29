@@ -5,11 +5,12 @@ type ApiResponseModel<T> = {
     message?: string | null
 }
 
-type NamedItem = { id: number; name: string }
+export type NamedItem = { id: number; name: string }
 
 type ApiIssueType = { issueTypeId: number; name: string }
 type ApiTopic = { topicId: number; name: string }
 type ApiWorkpackage = { workpackageId: number; name: string }
+type ApiTaskCategory = { taskCategoryId: number; name: string }
 
 export type TagCollections = {
     issues: NamedItem[]
@@ -51,5 +52,33 @@ export async function fetchTagCollections(): Promise<{ data: TagCollections; err
             data: { issues: [], topics: [], workpackages: [] },
             error: e instanceof Error ? e.message : "Unknown error",
         }
+    }
+}
+
+export async function fetchTaskCategories(): Promise<{ categories: NamedItem[]; error: string | null }> {
+    try {
+        const res = await matdevFetch("/api/taskcategory")
+        if (!res.ok) return { categories: [], error: `HTTP ${res.status}` }
+        const json = (await res.json()) as ApiResponseModel<ApiTaskCategory[]>
+        return {
+            categories: (json.data ?? []).map(c => ({ id: c.taskCategoryId, name: c.name })),
+            error: null,
+        }
+    } catch (e) {
+        return { categories: [], error: e instanceof Error ? e.message : "Unknown error" }
+    }
+}
+
+export async function fetchAssignableUsersForProject(projectId: number): Promise<{ users: { id: number; firstName: string; lastName: string }[]; error: string | null }> {
+    try {
+        const res = await matdevFetch(`/api/project/${projectId}/view/assignable-users`)
+        if (!res.ok) return { users: [], error: `HTTP ${res.status}` }
+        const json = (await res.json()) as ApiResponseModel<Array<{ userId: number; firstName: string; lastName: string }>>
+        return {
+            users: (json.data ?? []).map(u => ({ id: u.userId, firstName: u.firstName ?? "", lastName: u.lastName ?? "" })),
+            error: null,
+        }
+    } catch (e) {
+        return { users: [], error: e instanceof Error ? e.message : "Unknown error" }
     }
 }

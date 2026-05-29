@@ -53,6 +53,21 @@ export async function createMatdevProject(body: CreateProjectApiBody): Promise<C
     }
 }
 
+export async function deleteMatdevProject(projectId: number): Promise<CreateProjectResult> {
+    try {
+        const res = await matdevFetch(`/api/project/${projectId}`, { method: "DELETE" })
+        if (res.ok) return { ok: true }
+        let message = `HTTP ${res.status}`
+        try {
+            const j = (await res.json()) as { message?: string }
+            if (j.message) message = j.message
+        } catch { /* keep */ }
+        return { ok: false, error: message }
+    } catch (e) {
+        return { ok: false, error: e instanceof Error ? e.message : "Unknown error" }
+    }
+}
+
 export async function updateMatdevProject(body: EditProjectBody): Promise<CreateProjectResult> {
     try {
         const res = await matdevFetch("/api/project", {
@@ -61,7 +76,7 @@ export async function updateMatdevProject(body: EditProjectBody): Promise<Create
             body: JSON.stringify(body),
         })
 
-        if (res.status === 200) {
+        if (res.ok) {
             return { ok: true }
         }
 

@@ -47,7 +47,7 @@ const ProjectFormModal = ({ isOpen, onClose, onCreated, lookups, lookupsError, m
         setSubmitError(null)
         const projectName = String(formData.get("name") ?? "").trim()
         if (!projectName) {
-            setSubmitError("Nazwa projektu jest wymagana.")
+            setSubmitError("Project name is required.")
             return
         }
         const topicId = parseId(formData.get("topicId"))
@@ -106,7 +106,7 @@ const ProjectFormModal = ({ isOpen, onClose, onCreated, lookups, lookupsError, m
     const isEdit = mode === "edit"
 
     return (
-        <FormModalShell isOpen={isOpen} title={isEdit ? "Edytuj projekt" : "Nowy projekt"} onClose={onClose}>
+        <FormModalShell isOpen={isOpen} title={isEdit ? "Edit project" : "New project"} onClose={onClose}>
             {lookupsError ? (
                 <p className="text-error mb-4 text-sm">Nie załadowano list (topic, status, …): {lookupsError}</p>
             ) : null}
@@ -123,7 +123,7 @@ const ProjectFormModal = ({ isOpen, onClose, onCreated, lookups, lookupsError, m
                     <input
                         name="name"
                         required
-                        placeholder="Nazwa projektu"
+                        placeholder="Project name"
                         defaultValue={initialProject?.projectName ?? ""}
                         className={formFieldClasses}
                         disabled={pending || !canUseForm}
@@ -274,7 +274,7 @@ const ProjectFormModal = ({ isOpen, onClose, onCreated, lookups, lookupsError, m
                     <textarea
                         name="description"
                         rows={4}
-                        placeholder="Opis"
+                        placeholder="Description"
                         defaultValue={initialProject?.description ?? ""}
                         disabled={pending || !canUseForm}
                         className="border-border w-full resize-none rounded-md border bg-transparent py-3 pr-4 pl-10"
@@ -288,14 +288,14 @@ const ProjectFormModal = ({ isOpen, onClose, onCreated, lookups, lookupsError, m
                         className="border-border cursor-pointer rounded-md border px-4 py-2 text-sm"
                         disabled={pending}
                     >
-                        Anuluj
+                        Cancel
                     </button>
                     <button
                         type="submit"
                         disabled={pending || !canUseForm}
                         className="cursor-pointer rounded-md bg-[#2D3748] px-6 py-2 text-sm text-white disabled:opacity-50"
                     >
-                        {pending ? "Zapisuję…" : isEdit ? "Zapisz zmiany" : "Dodaj projekt"}
+                        {pending ? "Saving…" : isEdit ? "Save changes" : "Add project"}
                     </button>
                 </div>
             </form>

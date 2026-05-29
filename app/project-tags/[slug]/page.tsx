@@ -1,5 +1,7 @@
-const SingleBudgetPage = () => {
-    return <div>Single Budget Page</div>
+import { redirect } from "next/navigation"
+
+const SingleTagPage = () => {
+    redirect("/project-tags")
 }
 
-export default SingleBudgetPage
+export default SingleTagPage

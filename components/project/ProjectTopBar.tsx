@@ -7,9 +7,11 @@ interface ProjectTopBarProps {
     current: string | null
     setCurrent: (val: string | null) => void
     onOpenModal: () => void
+    search: string
+    onSearch: (v: string) => void
 }
 
-const ProjectTopBar = ({ statusOptions, current, setCurrent, onOpenModal }: ProjectTopBarProps) => {
+const ProjectTopBar = ({ statusOptions, current, setCurrent, onOpenModal, search, onSearch }: ProjectTopBarProps) => {
     return (
         <header className="grid grid-cols-3">
             <h1>Projects</h1>
@@ -20,7 +22,7 @@ const ProjectTopBar = ({ statusOptions, current, setCurrent, onOpenModal }: Proj
 
             <div className="flex items-center gap-3 justify-self-end">
                 <IconButton Icon={PlusIcon} onClick={onOpenModal} />
-                <SearchBar />
+                <SearchBar value={search} onChange={onSearch} placeholder="Search projects…" />
             </div>
         </header>
     )

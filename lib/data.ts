@@ -199,6 +199,8 @@ export type TaskType = {
     description: string
     status: ProjectStatus
     priority: ProjectPriority
+    statusId?: number | null
+    priorityId?: number | null
     isMilestone: boolean
     startDate: string
     endDate: string

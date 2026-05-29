@@ -2,14 +2,7 @@
 
 import { matdevFetch } from "@/lib/matdev-http"
 
-export type UserBody = {
-    firstName: string
-    lastName: string
-    email: string | null
-    phoneNumber: string | null
-}
-
-export type UserMutationResult = { ok: true } | { ok: false; error: string }
+export type TaskCategoryMutationResult = { ok: true } | { ok: false; error: string }
 
 async function parseError(res: Response): Promise<string> {
     let message = `HTTP ${res.status}`
@@ -26,26 +19,26 @@ async function parseError(res: Response): Promise<string> {
     return message
 }
 
-export async function createMatdevUser(body: UserBody): Promise<UserMutationResult> {
+export async function createTaskCategory(name: string): Promise<TaskCategoryMutationResult> {
     try {
-        const res = await matdevFetch("/api/user/create", {
+        const res = await matdevFetch("/api/taskcategory", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(body),
+            body: JSON.stringify({ name }),
         })
-        if (res.status === 201) return { ok: true }
+        if (res.status === 201 || res.ok) return { ok: true }
         return { ok: false, error: await parseError(res) }
     } catch (e) {
         return { ok: false, error: e instanceof Error ? e.message : "Unknown error" }
     }
 }
 
-export async function updateMatdevUser(userId: number, body: UserBody): Promise<UserMutationResult> {
+export async function updateTaskCategory(taskCategoryId: number, name: string): Promise<TaskCategoryMutationResult> {
     try {
-        const res = await matdevFetch("/api/user/edit", {
+        const res = await matdevFetch("/api/taskcategory", {
             method: "PATCH",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ userId, ...body }),
+            body: JSON.stringify({ taskCategoryId, name }),
         })
         if (res.ok) return { ok: true }
         return { ok: false, error: await parseError(res) }
@@ -54,9 +47,9 @@ export async function updateMatdevUser(userId: number, body: UserBody): Promise<
     }
 }
 
-export async function deleteMatdevUser(userId: number): Promise<UserMutationResult> {
+export async function deleteTaskCategory(taskCategoryId: number): Promise<TaskCategoryMutationResult> {
     try {
-        const res = await matdevFetch(`/api/user/${userId}`, { method: "DELETE" })
+        const res = await matdevFetch(`/api/taskcategory/${taskCategoryId}`, { method: "DELETE" })
         if (res.ok) return { ok: true }
         return { ok: false, error: await parseError(res) }
     } catch (e) {

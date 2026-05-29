@@ -1,6 +1,6 @@
 "use client"
 
-import { HomeIcon, RectangleGroupIcon, RectangleStackIcon, UserIcon, ClipboardDocumentListIcon } from "@heroicons/react/24/outline"
+import { HomeIcon, RectangleGroupIcon, RectangleStackIcon, UserIcon, ClipboardDocumentListIcon, TagIcon } from "@heroicons/react/24/outline"
 import NavItem from "@/components/layout/NavItem"
 import { usePathname } from "next/navigation"
 
@@ -12,6 +12,7 @@ const Sidebar = () => {
     const menuLinks = [
         { icon: HomeIcon, href: "/projects" },
         { icon: ClipboardDocumentListIcon, href: "/project-tags" },
+        { icon: TagIcon, href: "/task-categories" },
         { icon: UserIcon, href: "/users" },
     ]
 

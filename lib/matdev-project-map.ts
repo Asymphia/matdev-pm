@@ -1,4 +1,5 @@
 import type { ProjectPriority, ProjectStatus, ProjectType, TaskType } from "@/lib/data"
+import type { ProjectCreateLookups } from "@/lib/matdev-project-form"
 
 /** JSON shape from ASP.NET (camelCase). */
 export type ApiGetProjectDTO = {
@@ -21,6 +22,8 @@ export type ApiGetProjectDTO = {
     priorityName?: string | null
     responsibleDisplayName?: string | null
     supportDisplayName?: string | null
+    budgetAmount?: number | null
+    budgetSpent?: number | null
 }
 
 export type ApiResponseModel<T> = {
@@ -90,8 +93,8 @@ export function mapApiProjectToProjectType(p: ApiGetProjectDTO): ProjectType {
         status: mapProjectStatus(p.statusName),
         priority: mapProjectPriority(p.priorityName),
         people: people.length ? people : ["—"],
-        budget: 0,
-        amountSpent: 0,
+        budget: p.budgetAmount ?? 0,
+        amountSpent: p.budgetSpent ?? 0,
         topicId: p.topicId ?? null,
         statusId: p.statusId ?? null,
         priorityId: p.priorityId ?? null,
@@ -103,6 +106,41 @@ export function mapApiProjectToProjectType(p: ApiGetProjectDTO): ProjectType {
     }
 }
 
+/**
+ * Backend GetProjectDTO only returns IDs, not display names. This function
+ * resolves names from the already-fetched lookups so the UI can show real values.
+ */
+export function enrichProjectWithLookups(project: ProjectType, lookups: ProjectCreateLookups | null): ProjectType {
+    if (!lookups) return project
+    const byId = <T extends { id: number; name: string }>(arr: T[], id: number | null | undefined) =>
+        id != null ? arr.find(x => x.id === id)?.name ?? null : null
+
+    const topicName = byId(lookups.topics, project.topicId)
+    const issueTypeName = byId(lookups.issueTypes, project.issuetypeId)
+    const workpackageName = byId(lookups.workpackages, project.workpackageId)
+    const statusName = byId(lookups.statuses, project.statusId)
+    const priorityName = byId(lookups.priorities, project.priorityId)
+
+    const responsible = project.respPeronId != null
+        ? lookups.users.find(u => u.id === project.respPeronId)?.displayName ?? null
+        : null
+    const support = project.suppPersonId != null
+        ? lookups.users.find(u => u.id === project.suppPersonId)?.displayName ?? null
+        : null
+    const people = [responsible, support].filter((x): x is string => Boolean(x?.trim()))
+
+    return {
+        ...project,
+        issueType: issueTypeName ?? "—",
+        workpackage: workpackageName ?? "—",
+        topic: topicName ?? "—",
+        status: mapProjectStatus(statusName),
+        priority: mapProjectPriority(priorityName),
+        rawStatusName: statusName,
+        people: people.length ? people : ["—"],
+    }
+}
+
 export function mapApiTaskToTaskType(projectId: number, t: ApiGetProjectTaskListItemDTO): TaskType {
     return {
         id: t.taskId,
@@ -111,9 +149,11 @@ export function mapApiTaskToTaskType(projectId: number, t: ApiGetProjectTaskList
         description: "",
         status: mapTaskStatus(t.status),
         priority: mapTaskPriority(t.priority),
+        statusId: t.statusId ?? null,
+        priorityId: t.priorityId ?? null,
         isMilestone: t.isMilestone,
-        startDate: t.startDate.slice(0, 10),
-        endDate: t.endDate.slice(0, 10),
+        startDate: (t.startDate ?? "").slice(0, 10),
+        endDate: (t.endDate ?? "").slice(0, 10),
         parentId: t.parentId ?? undefined,
         progress: Number(t.progress),
         taskCategory: t.taskCategoryName?.trim() || "—",
