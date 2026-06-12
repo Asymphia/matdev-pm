@@ -17,12 +17,24 @@ const ProjectLayout = async ({
         notFound()
     }
 
-    const [{ project }, { lookups, error: lookupsError }] = await Promise.all([
+    const [{ project, error: projectLoadError }, { lookups, error: lookupsError }] = await Promise.all([
         fetchMatdevProjectById(id),
         fetchProjectCreateLookups(id),
     ])
 
     if (!project) {
+        if (projectLoadError) {
+            return (
+                <div className="flex h-full flex-col gap-4">
+                    <p className="text-error border-error rounded-md border px-4 py-3 text-sm">
+                        Nie udało się załadować projektu: {projectLoadError}
+                    </p>
+                    <p className="text-text-primary-300 text-sm">
+                        Sprawdź czy backend działa ({process.env.MATDEV_API_BASE_URL ?? "http://127.0.0.1:5196"}).
+                    </p>
+                </div>
+            )
+        }
         notFound()
     }
 

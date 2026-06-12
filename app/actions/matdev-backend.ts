@@ -1,6 +1,7 @@
 "use server"
 
 import { matdevFetch } from "@/lib/matdev-http"
+import { toUserFacingError } from "@/lib/user-facing-errors"
 
 export type MatdevPingResult =
     | { ok: true; latencyMs: number; utc?: string }
@@ -17,7 +18,7 @@ export async function pingMatdevBackend(): Promise<MatdevPingResult> {
         const res = await matdevFetch("/api/health")
         const latencyMs = Math.round(performance.now() - started)
         if (!res.ok) {
-            return { ok: false, latencyMs, error: res.statusText || "HTTP error", status: res.status }
+            return { ok: false, latencyMs, error: toUserFacingError(res.statusText || "HTTP error", "api"), status: res.status }
         }
         let utc: string | undefined
         try {
@@ -30,7 +31,7 @@ export async function pingMatdevBackend(): Promise<MatdevPingResult> {
     } catch (e) {
         const latencyMs = Math.round(performance.now() - started)
         const message = e instanceof Error ? e.message : "Unknown error"
-        return { ok: false, latencyMs, error: message }
+        return { ok: false, latencyMs, error: toUserFacingError(message, "network") }
     }
 }
 
@@ -39,7 +40,7 @@ export async function probeMatdevProjects(): Promise<MatdevProjectsProbeResult> 
     try {
         const res = await matdevFetch("/api/project")
         if (!res.ok) {
-            return { ok: false, error: res.statusText || "HTTP error", status: res.status }
+            return { ok: false, error: toUserFacingError(res.statusText || "HTTP error", "api") }
         }
         const json = (await res.json()) as {
             data?: unknown
@@ -49,7 +50,6 @@ export async function probeMatdevProjects(): Promise<MatdevProjectsProbeResult> 
         const projectCount = Array.isArray(data) ? data.length : 0
         return { ok: true, projectCount, message: json.message }
     } catch (e) {
-        const message = e instanceof Error ? e.message : "Unknown error"
-        return { ok: false, error: message }
+        return { ok: false, error: toUserFacingError(e, "network") }
     }
 }

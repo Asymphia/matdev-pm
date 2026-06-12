@@ -16,8 +16,8 @@ const SingleProjectPage = async ({ params }: { params: Promise<{ projectSlug: st
     const [
         { project, error: projectError },
         { tasks, error: tasksError },
-        { users: assignedUsers, error: usersError },
-        { lookups, error: lookupsError },
+        { users: assignedUsers },
+        { lookups },
         { users: assignableUsers },
         budget,
         risks,
@@ -36,7 +36,8 @@ const SingleProjectPage = async ({ params }: { params: Promise<{ projectSlug: st
     }
 
     const enrichedProject = enrichProjectWithLookups(project, lookups)
-    const note = [projectError, tasksError, usersError, lookupsError].filter(Boolean).join(" · ")
+    // Tylko krytyczne błędy — reszta (users, lookups) ma fallback i nie powinna straszyć banerem
+    const note = [projectError, tasksError].filter(Boolean).join(" · ")
 
     return (
         <SingleProjectPageClient

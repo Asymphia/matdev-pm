@@ -11,6 +11,9 @@ import { useRouter } from "next/navigation"
 import { useState, useTransition } from "react"
 import type { ProjectType } from "@/lib/data"
 import { useConfirm } from "@/hooks/useConfirm"
+import AlertBanner from "@/components/ui/AlertBanner"
+import LoadingSpinner from "@/components/ui/LoadingSpinner"
+import { toUserFacingError } from "@/lib/user-facing-errors"
 
 type Props = {
     initialProjects: ProjectType[]
@@ -71,12 +74,28 @@ const ProjectsPageClient = ({ initialProjects, loadError, lookups, lookupsError 
     const hasActiveFilters = Boolean(currentFilter || term)
     const isEmptyDatabase = initialProjects.length === 0
 
+    const displayError = loadError
+        ? toUserFacingError(loadError, "api")
+        : deleteError
+          ? toUserFacingError(deleteError, "generic")
+          : null
+
     return (
-        <div className="flex h-full w-full flex-col gap-11">
-            {(loadError || deleteError) ? (
-                <p className="text-error border-error rounded-md border px-4 py-3 text-sm">
-                    {loadError ? `Failed to load projects from API: ${loadError}` : deleteError}
-                </p>
+        <div className="relative flex h-full w-full flex-col gap-11">
+            {pending ? (
+                <div className="bg-background/70 absolute inset-0 z-10 flex items-center justify-center rounded-lg backdrop-blur-[1px]">
+                    <LoadingSpinner size="md" label="Przetwarzanie…" />
+                </div>
+            ) : null}
+
+            {displayError ? (
+                <AlertBanner
+                    variant="error"
+                    title={loadError ? "Nie udało się załadować projektów" : "Operacja nie powiodła się"}
+                    message={displayError}
+                    onRetry={loadError ? () => router.refresh() : undefined}
+                    retryLabel="Odśwież stronę"
+                />
             ) : null}
 
             <ProjectTopBar statusOptions={statusOptions} current={currentFilter} setCurrent={val => setCurrentFilter(val)} onOpenModal={() => setIsModalOpen(true)} search={search} onSearch={setSearch} />

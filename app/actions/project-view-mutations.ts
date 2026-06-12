@@ -16,6 +16,7 @@ async function parseError(res: Response): Promise<string> {
     } catch {
         // keep default
     }
+    if (res.status >= 500) return "Błąd serwera API — spróbuj ponownie."
     return message
 }
 

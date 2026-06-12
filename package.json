@@ -5,9 +5,13 @@
     "main": "dist-electron/main.js",
     "scripts": {
         "dev": "concurrently \"next dev\" \"wait-on http://localhost:3000 && npm run electron:start\"",
-        "electron:start": "tsc -p tsconfig.electron.json && npx electron .",
-        "build": "next build && tsc -p tsconfig.electron.json",
-        "dist": "npm run build && electron-builder",
+        "dev:web": "next dev",
+        "electron:compile": "tsc -p tsconfig.electron.json && node -e \"require('fs').copyFileSync('electron/loading.html','dist-electron/loading.html')\"",
+        "electron:start": "npm run electron:compile && npx electron .",
+        "build": "next build && npm run electron:compile",
+        "build:desktop": "powershell -ExecutionPolicy Bypass -File scripts/build-desktop.ps1",
+        "start:desktop": "powershell -ExecutionPolicy Bypass -File scripts/start-desktop.ps1",
+        "dist": "npm run build:desktop",
         "lint": "eslint"
     },
     "dependencies": {
@@ -33,17 +37,32 @@
         "wait-on": "^9.0.4"
     },
     "build": {
-        "appId": "com.myapp.desktop",
-        "productName": "My App",
+        "appId": "com.matdev.pm",
+        "productName": "MatDev PM",
+        "copyright": "MatDev",
         "directories": {
-            "output": "release"
+            "output": "release",
+            "buildResources": "build"
         },
         "files": [
             "dist-electron/**/*",
-            "out/**/*"
+            "package.json"
+        ],
+        "extraResources": [
+            { "from": "desktop-resources/api", "to": "api", "filter": ["**/*"] },
+            { "from": "desktop-resources/next", "to": "next", "filter": ["**/*"] },
+            { "from": "desktop-resources/database", "to": "database", "filter": ["**/*"] }
         ],
         "win": {
-            "target": "nsis"
+            "target": ["nsis"],
+            "artifactName": "MatDev-PM-Setup-${version}.${ext}"
+        },
+        "nsis": {
+            "oneClick": false,
+            "allowToChangeInstallationDirectory": true,
+            "createDesktopShortcut": true,
+            "createStartMenuShortcut": true,
+            "shortcutName": "MatDev PM"
         },
         "mac": {
             "target": "dmg"

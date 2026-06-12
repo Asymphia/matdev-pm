@@ -230,3 +230,38 @@
         outline-offset: 2px;
     }
 }
+
+@keyframes skeleton-shimmer {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+.skeleton-shimmer {
+    background-image: linear-gradient(
+        90deg,
+        var(--foreground) 0%,
+        color-mix(in srgb, var(--border) 60%, var(--foreground)) 50%,
+        var(--foreground) 100%
+    );
+    background-size: 200% 100%;
+    animation: skeleton-shimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes fade-in-up {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-in-up {
+    animation: fade-in-up 0.45s ease-out both;
+}

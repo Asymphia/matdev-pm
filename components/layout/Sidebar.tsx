@@ -2,6 +2,8 @@
 
 import {
     BanknotesIcon,
+    BeakerIcon,
+    ChartBarSquareIcon,
     HomeIcon,
     RectangleGroupIcon,
     RectangleStackIcon,
@@ -35,8 +37,18 @@ const Sidebar = () => {
                   matchPrefix: true,
               },
               {
+                  icon: ChartBarSquareIcon,
+                  href: `/projects/${slug}/gantt`,
+                  matchPrefix: true,
+              },
+              {
                   icon: BanknotesIcon,
                   href: `/projects/${slug}/budget`,
+                  matchPrefix: true,
+              },
+              {
+                  icon: BeakerIcon,
+                  href: `/projects/${slug}/lab`,
                   matchPrefix: true,
               },
           ]

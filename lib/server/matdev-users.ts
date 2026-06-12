@@ -1,5 +1,6 @@
 import { matdevFetch } from "@/lib/matdev-http"
 import { mapApiUserToUserType, type ApiGetUserDTO } from "@/lib/matdev-user-map"
+import { toUserFacingError } from "@/lib/user-facing-errors"
 import type { UserType } from "@/lib/data"
 
 type ApiResponseModel<T> = {
@@ -20,7 +21,6 @@ export async function fetchMatdevUsers(): Promise<{ users: UserType[]; error: st
         }
         return { users: data.map(mapApiUserToUserType), error: null }
     } catch (e) {
-        const message = e instanceof Error ? e.message : "Unknown error"
-        return { users: [], error: message }
+        return { users: [], error: toUserFacingError(e, "network") }
     }
 }

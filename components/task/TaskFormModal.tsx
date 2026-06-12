@@ -28,17 +28,16 @@ const TaskFormModal = ({ isOpen, onClose, onCreated, projectId }: TaskFormModalP
 
     const loadProjectId = isOpen ? projectId : null
     const [loadedFor, setLoadedFor] = useState<number | null>(null)
+    const [wasOpen, setWasOpen] = useState(isOpen)
     if (loadProjectId !== loadedFor) {
         setLoadedFor(loadProjectId)
         setLookups(null)
         setLookupsError(null)
     }
-
-    useEffect(() => {
-        if (!isOpen) {
-            setAssignedUserIds([])
-        }
-    }, [isOpen])
+    if (isOpen !== wasOpen) {
+        setWasOpen(isOpen)
+        if (!isOpen) setAssignedUserIds([])
+    }
 
     useEffect(() => {
         if (loadProjectId == null) return

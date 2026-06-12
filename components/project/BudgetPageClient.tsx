@@ -13,6 +13,8 @@ import BudgetCategoryCards from "@/components/project/BudgetCategoryCards"
 import BudgetCategoriesPanel from "@/components/project/BudgetCategoriesPanel"
 import ExpenditureForm from "@/components/project/ExpenditureForm"
 import BudgetAlertsPanel from "@/components/project/BudgetAlertsPanel"
+import BudgetMonthlyTrendChart from "@/components/project/BudgetMonthlyTrendChart"
+import BudgetStatsPanel from "@/components/project/BudgetStatsPanel"
 import Button from "@/components/ui/Button"
 import { TrashIcon, PencilIcon, PlusIcon } from "@heroicons/react/24/outline"
 import { deleteExpenditure } from "@/app/actions/budget-mutations"
@@ -30,7 +32,7 @@ type FlatExpenditure = BudgetExpenditure & { categoryId: number }
 
 type TaskOption = { taskId: number; taskName: string }
 
-type BudgetView = "overview" | "by-task"
+type BudgetView = "overview" | "by-task" | "stats"
 
 type Props = {
     projectId: number
@@ -233,7 +235,7 @@ const BudgetPageClient = ({ projectId, initialBudget, categories, initialLines, 
             </BlockWrapper>
 
             <div className="border-border flex gap-1 border-b">
-                {(["overview", "by-task"] as const).map(v => (
+                {(["overview", "by-task", "stats"] as const).map(v => (
                     <button
                         key={v}
                         type="button"
@@ -244,7 +246,7 @@ const BudgetPageClient = ({ projectId, initialBudget, categories, initialLines, 
                                 : "text-text-primary-300 hover:text-primary-700"
                         }`}
                     >
-                        {v === "overview" ? "Overview" : "By task"}
+                        {v === "overview" ? "Overview" : v === "by-task" ? "By task" : "Stats"}
                         <span
                             aria-hidden
                             className={`absolute inset-x-2 bottom-0 h-0.5 rounded-full bg-primary-700 transition-opacity ${
@@ -261,6 +263,12 @@ const BudgetPageClient = ({ projectId, initialBudget, categories, initialLines, 
                 <CardTitle>Categories at a glance</CardTitle>
                 <BudgetCategoryCards budget={budget} />
             </BlockWrapper>
+
+            <BudgetMonthlyTrendChart
+                expenditures={flatExpenditures}
+                planTotal={budget.totalAmount}
+                compact
+            />
 
             <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
                 <BlockWrapper>
@@ -304,6 +312,10 @@ const BudgetPageClient = ({ projectId, initialBudget, categories, initialLines, 
                 </BlockWrapper>
             </div>
                 </>
+            )}
+
+            {view === "stats" && (
+                <BudgetStatsPanel budget={budget} expenditures={flatExpenditures} spendByTask={spendByTask} />
             )}
 
             {view === "by-task" && (

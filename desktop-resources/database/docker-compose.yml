@@ -1,0 +1,15 @@
+# Tylko baza — używane przez aplikację desktopową (Electron)
+services:
+  matdev.database:
+    image: postgres:18.3
+    environment:
+      POSTGRES_DB: matdev
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - matdev_pgdata:/var/lib/postgresql
+
+volumes:
+  matdev_pgdata:

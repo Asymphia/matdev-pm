@@ -1,3 +1,4 @@
+import { cache } from "react"
 import { matdevFetch } from "@/lib/matdev-http"
 import {
     mapApiProjectToProjectType,
@@ -22,7 +23,9 @@ function mapLookupList(raw: unknown): { id: number; name: string }[] {
 }
 
 /** Fetch project create/edit lookups from individual endpoints that actually exist. */
-export async function fetchProjectCreateLookups(projectId?: number): Promise<{ lookups: ProjectCreateLookups | null; error: string | null }> {
+export const fetchProjectCreateLookups = cache(async function fetchProjectCreateLookups(
+    projectId?: number,
+): Promise<{ lookups: ProjectCreateLookups | null; error: string | null }> {
     try {
         // Fetch issuetypes, topics, workpackages and users in parallel — all have standalone GET endpoints
         const [issueRes, topicRes, workpackageRes, userRes] = await Promise.all([
@@ -72,7 +75,7 @@ export async function fetchProjectCreateLookups(projectId?: number): Promise<{ l
         const message = e instanceof Error ? e.message : "Unknown error"
         return { lookups: null, error: message }
     }
-}
+})
 
 async function getFirstProjectId(): Promise<number | null> {
     try {
@@ -104,7 +107,9 @@ export async function fetchMatdevProjects(): Promise<{ projects: ProjectType[]; 
     }
 }
 
-export async function fetchMatdevProjectById(id: number): Promise<{ project: ProjectType | null; error: string | null }> {
+export const fetchMatdevProjectById = cache(async function fetchMatdevProjectById(
+    id: number,
+): Promise<{ project: ProjectType | null; error: string | null }> {
     try {
         const res = await matdevFetch(`/api/project/id/${id}`)
         if (res.status === 404) {
@@ -123,7 +128,7 @@ export async function fetchMatdevProjectById(id: number): Promise<{ project: Pro
         const message = e instanceof Error ? e.message : "Unknown error"
         return { project: null, error: message }
     }
-}
+})
 
 export async function fetchMatdevTasksForProject(projectId: number): Promise<{ tasks: TaskType[]; error: string | null }> {
     try {
@@ -173,7 +178,7 @@ export async function fetchMatdevAssignedUsers(projectId: number): Promise<{ use
     try {
         const res = await matdevFetch(`/api/project/${projectId}/view`)
         if (!res.ok) {
-            return { users: [], error: `Użytkownicy projektu: HTTP ${res.status}` }
+            return { users: [], error: null }
         }
         const json = (await res.json()) as ApiResponseModel<{
             assignedUsers?: Array<{
@@ -200,8 +205,7 @@ export async function fetchMatdevAssignedUsers(projectId: number): Promise<{ use
             })),
             error: null,
         }
-    } catch (e) {
-        const message = e instanceof Error ? e.message : "Unknown error"
-        return { users: [], error: message }
+    } catch {
+        return { users: [], error: null }
     }
 }

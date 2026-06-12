@@ -12,7 +12,9 @@ const ProjectTabs = ({ projectSlug }: { projectSlug: string }) => {
     const tabs: Tab[] = [
         { href: base, label: "Overview", match: p => p === base || p === `${base}/` },
         { href: `${base}/tasks`, label: "Tasks", match: p => p.startsWith(`${base}/tasks`) },
+        { href: `${base}/gantt`, label: "Gantt", match: p => p.startsWith(`${base}/gantt`) },
         { href: `${base}/budget`, label: "Budget", match: p => p.startsWith(`${base}/budget`) },
+        { href: `${base}/lab`, label: "Lab", match: p => p.startsWith(`${base}/lab`) },
     ]
 
     return (
