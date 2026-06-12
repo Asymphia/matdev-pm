@@ -21,23 +21,6 @@ function mapLookupList(raw: unknown): { id: number; name: string }[] {
         .filter((x): x is { id: number; name: string } => x != null)
 }
 
-function mapUserList(raw: unknown): ProjectCreateLookups["users"] {
-    if (!Array.isArray(raw)) return []
-    return raw
-        .map(row => {
-            if (!row || typeof row !== "object") return null
-            const o = row as { id?: number; firstName?: string; lastName?: string; displayName?: string }
-            if (typeof o.id !== "number") return null
-            return {
-                id: o.id,
-                firstName: o.firstName ?? "",
-                lastName: o.lastName ?? "",
-                displayName: o.displayName ?? `${o.firstName ?? ""} ${o.lastName ?? ""}`.trim(),
-            }
-        })
-        .filter((x): x is NonNullable<typeof x> => x != null)
-}
-
 /** Fetch project create/edit lookups from individual endpoints that actually exist. */
 export async function fetchProjectCreateLookups(projectId?: number): Promise<{ lookups: ProjectCreateLookups | null; error: string | null }> {
     try {
@@ -144,22 +127,33 @@ export async function fetchMatdevProjectById(id: number): Promise<{ project: Pro
 
 export async function fetchMatdevTasksForProject(projectId: number): Promise<{ tasks: TaskType[]; error: string | null }> {
     try {
-        const qs = new URLSearchParams({ page: "1", pageSize: "500" })
-        const res = await matdevFetch(`/api/project/${projectId}/task-list?${qs}`)
-        if (!res.ok) {
-            return { tasks: [], error: `Zadania: HTTP ${res.status}` }
-        }
-        const json = (await res.json()) as ApiResponseModel<{
-            items: ApiGetProjectTaskListItemDTO[]
-            totalCount: number
-            page: number
-            pageSize: number
-        }>
-        const items = json.data?.items
-        if (!Array.isArray(items)) {
-            return { tasks: [], error: "Zadania: niepoprawna odpowiedź API" }
-        }
-        return { tasks: items.map(t => mapApiTaskToTaskType(projectId, t)), error: null }
+        const pageSize = 100
+        const allItems: ApiGetProjectTaskListItemDTO[] = []
+        let totalCount = 0
+        let page = 1
+
+        do {
+            const qs = new URLSearchParams({ page: String(page), pageSize: String(pageSize) })
+            const res = await matdevFetch(`/api/project/${projectId}/task-list?${qs}`)
+            if (!res.ok) {
+                return { tasks: [], error: `Zadania: HTTP ${res.status}` }
+            }
+            const json = (await res.json()) as ApiResponseModel<{
+                items: ApiGetProjectTaskListItemDTO[]
+                totalCount: number
+                page: number
+                pageSize: number
+            }>
+            const items = json.data?.items
+            if (!Array.isArray(items)) {
+                return { tasks: [], error: "Zadania: niepoprawna odpowiedź API" }
+            }
+            totalCount = json.data?.totalCount ?? items.length
+            allItems.push(...items)
+            page++
+        } while (allItems.length < totalCount)
+
+        return { tasks: allItems.map(t => mapApiTaskToTaskType(projectId, t)), error: null }
     } catch (e) {
         const message = e instanceof Error ? e.message : "Unknown error"
         return { tasks: [], error: message }

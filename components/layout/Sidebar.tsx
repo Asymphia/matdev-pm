@@ -1,6 +1,13 @@
 "use client"
 
-import { HomeIcon, RectangleGroupIcon, RectangleStackIcon, UserIcon, ClipboardDocumentListIcon, TagIcon } from "@heroicons/react/24/outline"
+import {
+    BanknotesIcon,
+    HomeIcon,
+    RectangleGroupIcon,
+    RectangleStackIcon,
+    UserIcon,
+    TagIcon,
+} from "@heroicons/react/24/outline"
 import NavItem from "@/components/layout/NavItem"
 import { usePathname } from "next/navigation"
 
@@ -11,8 +18,7 @@ const Sidebar = () => {
 
     const menuLinks = [
         { icon: HomeIcon, href: "/projects" },
-        { icon: ClipboardDocumentListIcon, href: "/project-tags" },
-        { icon: TagIcon, href: "/task-categories" },
+        { icon: TagIcon, href: "/project-tags" },
         { icon: UserIcon, href: "/users" },
     ]
 
@@ -21,31 +27,53 @@ const Sidebar = () => {
               {
                   icon: RectangleGroupIcon,
                   href: `/projects/${slug}`,
+                  matchPrefix: false,
               },
               {
                   icon: RectangleStackIcon,
                   href: `/projects/${slug}/tasks`,
+                  matchPrefix: true,
+              },
+              {
+                  icon: BanknotesIcon,
+                  href: `/projects/${slug}/budget`,
+                  matchPrefix: true,
               },
           ]
         : []
 
+    const mainNavHalfHeightRem = (menuLinks.length * 3.25 + (menuLinks.length - 1) * 1) / 2
+    const hasProjectNav = projectSubLinks.length > 0
+
     return (
-        <div className="fixed inset-0 h-full w-fit px-6">
-            <nav className="mt-39 flex h-fit flex-col items-center gap-y-4">
+        <aside
+            className="fixed inset-y-0 left-0 flex w-fit flex-col items-center px-6"
+            style={
+                hasProjectNav
+                    ? { paddingTop: "5.5rem" }
+                    : { paddingTop: `calc(50vh - ${mainNavHalfHeightRem}rem)` }
+            }
+        >
+            <nav className="flex flex-col items-center gap-y-3">
                 {menuLinks.map(link => (
                     <NavItem href={link.href} Icon={link.icon} key={link.href} />
                 ))}
-
-                {projectSubLinks.length > 0 && (
-                    <>
-                        <hr className="bg-border h-1 w-7 rounded-full border-none" />
-                        {projectSubLinks.map(link => (
-                            <NavItem href={link.href} Icon={link.icon} key={link.href} />
-                        ))}
-                    </>
-                )}
             </nav>
-        </div>
+
+            {hasProjectNav && (
+                <nav className="mt-3 flex flex-col items-center gap-y-3">
+                    <hr className="bg-border mb-1 h-1 w-7 rounded-full border-none" />
+                    {projectSubLinks.map(link => (
+                        <NavItem
+                            href={link.href}
+                            Icon={link.icon}
+                            key={link.href}
+                            matchPrefix={link.matchPrefix}
+                        />
+                    ))}
+                </nav>
+            )}
+        </aside>
     )
 }
 

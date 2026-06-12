@@ -2,7 +2,6 @@ import type { Metadata } from "next"
 import "./globals.css"
 import { ReactNode } from "react"
 import { IBM_Plex_Sans, Source_Sans_3 } from "next/font/google"
-import ThemeProvider from "@/components/layout/ThemeProvider"
 import Sidebar from "@/components/layout/Sidebar"
 
 export const metadata: Metadata = {

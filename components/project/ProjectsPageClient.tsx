@@ -3,11 +3,14 @@
 import ProjectItem from "@/components/project/ProjectItem"
 import ProjectFormModal from "@/components/project/ProjectFormModal"
 import ProjectTopBar from "@/components/project/ProjectTopBar"
+import BlockWrapper from "@/components/ui/BlockWrapper"
 import type { ProjectCreateLookups } from "@/lib/matdev-project-form"
 import { deleteMatdevProject } from "@/app/actions/project-mutations"
+import { FolderPlusIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline"
 import { useRouter } from "next/navigation"
 import { useState, useTransition } from "react"
 import type { ProjectType } from "@/lib/data"
+import { useConfirm } from "@/hooks/useConfirm"
 
 type Props = {
     initialProjects: ProjectType[]
@@ -23,9 +26,16 @@ const ProjectsPageClient = ({ initialProjects, loadError, lookups, lookupsError 
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [deleteError, setDeleteError] = useState<string | null>(null)
     const [pending, startTransition] = useTransition()
+    const { confirm, ConfirmModal } = useConfirm()
 
-    const handleDeleteProject = (projectId: number) => {
-        if (!confirm("Delete this project? This cannot be undone.")) return
+    const handleDeleteProject = async (projectId: number) => {
+        const ok = await confirm({
+            title: "Delete project",
+            message: "This cannot be undone.",
+            confirmLabel: "Delete",
+            danger: true,
+        })
+        if (!ok) return
         startTransition(async () => {
             setDeleteError(null)
             const res = await deleteMatdevProject(projectId)
@@ -40,7 +50,7 @@ const ProjectsPageClient = ({ initialProjects, loadError, lookups, lookupsError 
         if (normalized === "CLOSED" || normalized === "COMPLETED") return "CLOSED"
         return normalized
     }
-    const statusOptions = ["TODO", "IN PROGRESS", "CLOSED"]
+    const statusOptions = ["To do", "In progress", "Closed"]
 
     const term = search.trim().toLowerCase()
     const data = initialProjects
@@ -58,6 +68,9 @@ const ProjectsPageClient = ({ initialProjects, loadError, lookups, lookupsError 
             )
         })
 
+    const hasActiveFilters = Boolean(currentFilter || term)
+    const isEmptyDatabase = initialProjects.length === 0
+
     return (
         <div className="flex h-full w-full flex-col gap-11">
             {(loadError || deleteError) ? (
@@ -68,9 +81,56 @@ const ProjectsPageClient = ({ initialProjects, loadError, lookups, lookupsError 
 
             <ProjectTopBar statusOptions={statusOptions} current={currentFilter} setCurrent={val => setCurrentFilter(val)} onOpenModal={() => setIsModalOpen(true)} search={search} onSearch={setSearch} />
 
-            <div className="grid grid-cols-2 gap-4 2xl:grid-cols-3">
+            <div className="grid min-h-[420px] flex-1 grid-cols-2 gap-4 2xl:grid-cols-3">
                 {!loadError && data.length === 0 ? (
-                    <p className="text-text-primary-300 col-span-full text-sm">No projects found.</p>
+                    <BlockWrapper className="col-span-full flex items-center justify-center border-dashed py-16">
+                        <div className="flex max-w-md flex-col items-center gap-5 text-center">
+                            <div className="border-border bg-foreground flex size-16 items-center justify-center rounded-full border">
+                                {isEmptyDatabase ? (
+                                    <FolderPlusIcon className="text-text-primary-300 size-8" />
+                                ) : (
+                                    <MagnifyingGlassIcon className="text-text-primary-300 size-8" />
+                                )}
+                            </div>
+                            <div className="space-y-2">
+                                <h2 className="text-lg font-semibold">
+                                    {isEmptyDatabase ? "No projects yet" : "No projects found"}
+                                </h2>
+                                <p className="text-text-primary-300 text-sm">
+                                    {isEmptyDatabase
+                                        ? "Create your first project to get started."
+                                        : hasActiveFilters
+                                          ? term
+                                              ? `Nothing matches “${search.trim()}”. Try another phrase or clear filters.`
+                                              : `No projects with status “${currentFilter}”. Try another filter or clear filters.`
+                                          : "No projects match the current view."}
+                                </p>
+                            </div>
+                            <div className="flex flex-wrap items-center justify-center gap-3">
+                                {isEmptyDatabase ? (
+                                    <button
+                                        type="button"
+                                        onClick={() => setIsModalOpen(true)}
+                                        className="cursor-pointer rounded-md bg-[#2D3748] px-5 py-2 text-sm text-white"
+                                    >
+                                        Add project
+                                    </button>
+                                ) : null}
+                                {hasActiveFilters ? (
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setSearch("")
+                                            setCurrentFilter(null)
+                                        }}
+                                        className="border-border cursor-pointer rounded-md border px-5 py-2 text-sm"
+                                    >
+                                        Clear filters
+                                    </button>
+                                ) : null}
+                            </div>
+                        </div>
+                    </BlockWrapper>
                 ) : null}
                 {data.map(project => (
                     <ProjectItem key={project.id} project={project} onDelete={handleDeleteProject} actionPending={pending} />
@@ -87,6 +147,7 @@ const ProjectsPageClient = ({ initialProjects, loadError, lookups, lookupsError 
                     router.refresh()
                 }}
             />
+            <ConfirmModal />
         </div>
     )
 }

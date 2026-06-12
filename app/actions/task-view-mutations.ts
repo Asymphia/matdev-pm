@@ -184,6 +184,7 @@ export type TaskEditBody = {
     endDate?: string | null
     taskDescription?: string | null
     taskCategoryId?: number | null
+    estimatedCost?: number
 }
 
 export async function editTask(projectId: number, taskId: number, body: TaskEditBody): Promise<TaskViewMutationResult> {

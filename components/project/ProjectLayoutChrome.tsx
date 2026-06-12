@@ -1,7 +1,8 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { useProjectLocalFields } from "@/hooks/useProjectLocalFields"
 import ProjectSidebar from "@/components/project/ProjectSidebar"
 import ProjectFormModal from "@/components/project/ProjectFormModal"
 import DeadlinePickerModal from "@/components/ui/DeadlinePickerModal"
@@ -12,19 +13,23 @@ import { changeProjectStatus, changeProjectDeadline } from "@/app/actions/projec
 type Props = {
     project: ProjectType
     lookups: ProjectCreateLookups | null
+    lookupsError: string | null
 }
 
-const TasksPageHeader = ({ project, lookups }: Props) => {
+/** Status, deadline and edit — shared across Overview / Tasks / Budget (no duplicate page titles). */
+const ProjectLayoutChrome = ({ project, lookups, lookupsError }: Props) => {
     const router = useRouter()
     const [deadlinePicker, setDeadlinePicker] = useState(false)
     const [editOpen, setEditOpen] = useState(false)
     const [error, setError] = useState<string | null>(null)
-    const [localStatus, setLocalStatus] = useState(project.status)
-    const [localStatusId, setLocalStatusId] = useState(project.statusId)
-    const [localDeadline, setLocalDeadline] = useState(project.deadline)
-    useEffect(() => { setLocalStatus(project.status) }, [project.status])
-    useEffect(() => { setLocalStatusId(project.statusId) }, [project.statusId])
-    useEffect(() => { setLocalDeadline(project.deadline) }, [project.deadline])
+    const {
+        localStatus,
+        setLocalStatus,
+        localStatusId,
+        setLocalStatusId,
+        localDeadline,
+        setLocalDeadline,
+    } = useProjectLocalFields(project)
 
     const statusOptions = lookups?.statuses ?? []
 
@@ -39,7 +44,11 @@ const TasksPageHeader = ({ project, lookups }: Props) => {
         setLocalStatusId(statusId)
         ;(async () => {
             const res = await changeProjectStatus(project.id, statusId)
-            if (!res.ok) { setError(res.error); setLocalStatus(project.status); setLocalStatusId(project.statusId) }
+            if (!res.ok) {
+                setError(res.error)
+                setLocalStatus(project.status)
+                setLocalStatusId(project.statusId)
+            }
         })()
     }
 
@@ -48,14 +57,20 @@ const TasksPageHeader = ({ project, lookups }: Props) => {
         setDeadlinePicker(false)
         ;(async () => {
             const res = await changeProjectDeadline(project.id, date)
-            if (!res.ok) { setError(res.error); setLocalDeadline(project.deadline) }
+            if (!res.ok) {
+                setError(res.error)
+                setLocalDeadline(project.deadline)
+            }
         })()
     }
 
     return (
         <>
-            {error && <p className="text-error border-error rounded-md border px-4 py-3 text-sm">{error}</p>}
-
+            {error ? (
+                <p className="text-error border-error mb-2 max-w-sm rounded-md border px-3 py-2 text-sm">
+                    {error}
+                </p>
+            ) : null}
             <ProjectSidebar
                 status={localStatus}
                 deadline={localDeadline}
@@ -64,7 +79,6 @@ const TasksPageHeader = ({ project, lookups }: Props) => {
                 onStatusChange={handleStatusChange}
                 onDeadlineChange={() => setDeadlinePicker(true)}
             />
-
             <DeadlinePickerModal
                 isOpen={deadlinePicker}
                 title="Change project deadline"
@@ -73,16 +87,20 @@ const TasksPageHeader = ({ project, lookups }: Props) => {
                 onConfirm={handleDeadlineChange}
                 pending={false}
             />
-
             <ProjectFormModal
                 isOpen={editOpen}
                 onClose={() => setEditOpen(false)}
-                onSaved={() => { setEditOpen(false); router.refresh() }}
-                editProject={{ ...project, statusId: localStatusId, deadline: localDeadline }}
+                onCreated={() => {
+                    setEditOpen(false)
+                    router.refresh()
+                }}
                 lookups={lookups}
+                lookupsError={lookupsError}
+                mode="edit"
+                initialProject={{ ...project, statusId: localStatusId, deadline: localDeadline }}
             />
         </>
     )
 }
 
-export default TasksPageHeader
+export default ProjectLayoutChrome

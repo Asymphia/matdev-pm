@@ -2,6 +2,7 @@
 
 import { ReactNode } from "react"
 import BlockWrapper from "@/components/ui/BlockWrapper"
+import CardTitle from "@/components/ui/CardTitle"
 import { TaskType } from "@/lib/data"
 import IconButton from "@/components/ui/IconButton"
 import { PlusIcon, ArrowUpRightIcon } from "@heroicons/react/24/outline"
@@ -13,6 +14,7 @@ import { useRouter } from "next/navigation"
 
 interface TasksListProps {
     tasks: TaskType[]
+    projectId?: number
     withDetails?: boolean
     onAdd?: () => void
     onDelete?: (taskId: number) => void
@@ -26,6 +28,7 @@ interface TasksListProps {
 
 const TasksList = ({
     tasks,
+    projectId,
     withDetails = false,
     onAdd,
     onDelete,
@@ -67,42 +70,53 @@ const TasksList = ({
         ]
     }
 
+    const resolvedProjectId = projectId ?? tasks[0]?.projectId
+
+    const listHeader = !withDetails ? (
+        <header className="flex items-center justify-between gap-3">
+            <CardTitle>Tasks</CardTitle>
+            <div className="flex shrink-0 items-center gap-2">
+                {onAdd ? <IconButton Icon={PlusIcon} onClick={() => onAdd()} /> : null}
+                {resolvedProjectId != null ? (
+                    <IconButton Icon={ArrowUpRightIcon} onClick={() => router.push(`/projects/${resolvedProjectId}/tasks`)} />
+                ) : null}
+            </div>
+        </header>
+    ) : null
+
     if (tasks.length === 0) {
-        return <BlockWrapper className="items-center">No tasks found</BlockWrapper>
+        return (
+            <BlockWrapper className="flex w-full flex-col gap-3 self-start">
+                {listHeader}
+                <p className="text-text-primary-100 text-sm">No tasks found.</p>
+            </BlockWrapper>
+        )
     }
 
     return (
-        <BlockWrapper className="gap-5">
-            {!withDetails && (
-                <header className="flex flex-nowrap items-center justify-between">
-                    <h2>Tasks</h2>
-                    <div className="flex flex-nowrap items-center gap-2">
-                        <IconButton Icon={PlusIcon} onClick={() => onAdd?.()} />
-                        <IconButton Icon={ArrowUpRightIcon} onClick={() => router.push(`/projects/${tasks[0].projectId}/tasks`)} />
-                    </div>
-                </header>
-            )}
+        <BlockWrapper className="flex w-full flex-col gap-5 self-start">
+            {!withDetails && listHeader}
 
-            <table className="w-full border-separate border-spacing-y-4">
+            <table className="w-full text-sm">
                 <thead>
-                    <tr>
+                    <tr className="border-border border-b">
                         <Th>Task name</Th>
-                        <Th>Start date</Th>
-                        <Th>Deadline</Th>
-                        <Th>Priority</Th>
-                        <Th>Status</Th>
+                        <Th align="center">Start date</Th>
+                        <Th align="center">Deadline</Th>
+                        <Th align="center">Priority</Th>
+                        <Th align="center">Status</Th>
                         {withDetails && (
                             <>
-                                <Th>Is milestone?</Th>
-                                <Th>Category</Th>
-                                <Th>Progress</Th>
+                                <Th align="center">Is milestone?</Th>
+                                <Th align="center">Category</Th>
+                                <Th align="center">Progress</Th>
                             </>
                         )}
-                        <Th>Manage</Th>
-                        {withDetails && <Th>Open</Th>}
+                        <Th align="center">Manage</Th>
+                        {withDetails && <Th align="center">Open</Th>}
                     </tr>
                 </thead>
-                <tbody>{mainTasks.map(task => renderRows(task))}</tbody>
+                <tbody className="divide-border divide-y">{mainTasks.map(task => renderRows(task))}</tbody>
             </table>
         </BlockWrapper>
     )

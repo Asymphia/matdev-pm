@@ -15,6 +15,19 @@ export type TaskViewTopbar = {
     priorityId: number
     taskProgress: number
     isMilestone: boolean
+    estimatedCost: number | null
+}
+
+export type TaskViewCosts = {
+    estimatedCost: number | null
+    taskSpent: number
+    expenditures: {
+        expenditureId: number
+        categoryName: string
+        amount: number
+        transactionDate: string
+        description: string
+    }[]
 }
 
 export type TaskViewSubtask = {
@@ -41,6 +54,7 @@ export type TaskViewData = {
     topbar: TaskViewTopbar
     subtasks: TaskViewSubtask[]
     assignments: TaskViewAssignedUser[]
+    costs: TaskViewCosts
 }
 
 type ApiTaskViewTopbar = {
@@ -58,6 +72,19 @@ type ApiTaskViewTopbar = {
     priorityId?: number | null
     taskProgress?: number
     isMilestone?: boolean
+    estimatedCost?: number | null
+}
+
+type ApiTaskViewCosts = {
+    estimatedCost?: number | null
+    taskSpent?: number
+    expenditures?: {
+        expenditureId?: number
+        categoryName?: string
+        amount?: number
+        transactionDate?: string
+        description?: string
+    }[]
 }
 
 type ApiTaskViewSubtask = {
@@ -84,6 +111,7 @@ type ApiTaskViewData = {
     topbar?: ApiTaskViewTopbar
     subtasks?: ApiTaskViewSubtask[]
     assignments?: ApiTaskViewAssignedUser[]
+    costs?: ApiTaskViewCosts
 }
 
 export async function fetchTaskView(
@@ -122,6 +150,18 @@ export async function fetchTaskView(
                     priorityId: t.priorityId ?? 0,
                     taskProgress: Number(t.taskProgress ?? 0),
                     isMilestone: Boolean(t.isMilestone),
+                    estimatedCost: t.estimatedCost != null ? Number(t.estimatedCost) : null,
+                },
+                costs: {
+                    estimatedCost: raw.costs?.estimatedCost != null ? Number(raw.costs.estimatedCost) : t.estimatedCost != null ? Number(t.estimatedCost) : null,
+                    taskSpent: Number(raw.costs?.taskSpent ?? 0),
+                    expenditures: (raw.costs?.expenditures ?? []).map(e => ({
+                        expenditureId: e.expenditureId ?? 0,
+                        categoryName: e.categoryName ?? "",
+                        amount: Number(e.amount ?? 0),
+                        transactionDate: e.transactionDate ?? "",
+                        description: e.description ?? "",
+                    })),
                 },
                 subtasks: (raw.subtasks ?? []).map(s => ({
                     subtaskId: s.subtaskId ?? 0,

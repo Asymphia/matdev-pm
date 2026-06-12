@@ -1,9 +1,7 @@
-import TaskCategoriesPageClient from "@/components/task-categories/TaskCategoriesPageClient"
-import { fetchTaskCategories } from "@/lib/server/matdev-tags"
+import { redirect } from "next/navigation"
 
-const TaskCategoriesPage = async () => {
-    const { categories, error } = await fetchTaskCategories()
-    return <TaskCategoriesPageClient initialCategories={categories} loadError={error} />
+const TaskCategoriesPage = () => {
+    redirect("/project-tags")
 }
 
 export default TaskCategoriesPage

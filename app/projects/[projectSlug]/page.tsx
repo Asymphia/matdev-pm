@@ -45,7 +45,6 @@ const SingleProjectPage = async ({ params }: { params: Promise<{ projectSlug: st
             assignedUsers={assignedUsers}
             assignableUsers={assignableUsers}
             lookups={lookups}
-            lookupsError={lookupsError}
             apiNote={note}
             budget={budget}
             risks={risks}

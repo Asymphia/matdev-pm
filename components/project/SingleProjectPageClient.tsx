@@ -1,11 +1,9 @@
 "use client"
 
 import ProjectDescription from "@/components/project/ProjectDescription"
-import ProjectFormModal from "@/components/project/ProjectFormModal"
-import ProjectSidebar from "@/components/project/ProjectSidebar"
 import TasksList from "@/components/project/TasksList"
 import TaskFormModal from "@/components/task/TaskFormModal"
-import BudgetChart from "@/components/project/BudgetChart"
+import BudgetMiniWidget from "@/components/project/BudgetMiniWidget"
 import WarningsList from "@/components/project/WarningsList"
 import UserList from "@/components/project/UserList"
 import DeadlinePickerModal from "@/components/ui/DeadlinePickerModal"
@@ -14,10 +12,11 @@ import type { ProjectCreateLookups } from "@/lib/matdev-project-form"
 import type { ProjectAssignedUser } from "@/lib/server/matdev-projects"
 import type { ProjectBudget } from "@/lib/server/matdev-budget"
 import type { ProjectRisk } from "@/lib/server/matdev-risks"
-import { assignUserToProject, removeUserFromProject, changeProjectStatus, changeProjectDeadline } from "@/app/actions/project-view-mutations"
+import { assignUserToProject, removeUserFromProject } from "@/app/actions/project-view-mutations"
 import { deleteTask, changeTaskStatus, changeTaskPriority, changeTaskDeadline } from "@/app/actions/task-mutations"
 import { useRouter } from "next/navigation"
-import { useState, useTransition, useEffect } from "react"
+import { useState, useTransition } from "react"
+import { useConfirm } from "@/hooks/useConfirm"
 
 type AssignableUser = { id: number; firstName: string; lastName: string }
 
@@ -27,41 +26,35 @@ type Props = {
     assignedUsers: ProjectAssignedUser[]
     assignableUsers: AssignableUser[]
     lookups: ProjectCreateLookups | null
-    lookupsError: string | null
     apiNote: string
     budget: ProjectBudget | null
     risks: ProjectRisk[]
 }
 
-const SingleProjectPageClient = ({ project, tasks, assignedUsers, assignableUsers, lookups, lookupsError, apiNote, budget, risks }: Props) => {
+const SingleProjectPageClient = ({ project, tasks, assignedUsers, assignableUsers, lookups, apiNote, budget, risks }: Props) => {
     const router = useRouter()
-    const [isEditModalOpen, setIsEditModalOpen] = useState(false)
-    const [deadlinePicker, setDeadlinePicker] = useState(false)
     const [taskModalOpen, setTaskModalOpen] = useState(false)
     const [taskDeadlinePicker, setTaskDeadlinePicker] = useState<{ taskId: number; current: string } | null>(null)
     const [actionError, setActionError] = useState<string | null>(null)
     const [pending, startTransition] = useTransition()
-
-    // Optimistic local state so the header updates immediately after mutations.
-    // The useEffect syncs back from server props when the full edit form saves + router.refresh() fires.
-    const [localStatus, setLocalStatus] = useState(project.status)
-    const [localStatusId, setLocalStatusId] = useState(project.statusId)
-    const [localDeadline, setLocalDeadline] = useState(project.deadline)
-    useEffect(() => { setLocalStatus(project.status) }, [project.status])
-    useEffect(() => { setLocalStatusId(project.statusId) }, [project.statusId])
-    useEffect(() => { setLocalDeadline(project.deadline) }, [project.deadline])
+    const { confirm, ConfirmModal } = useConfirm()
 
     const usersWithRoles = assignedUsers.map(user => ({
         ...user,
         role: user.isResponsible ? "Responsible" : ("Member" as "Responsible" | "Support" | "Member"),
     }))
 
-    const statusOptions = lookups?.statuses ?? []
     const taskStatusOptions = lookups?.statuses ?? []
     const taskPriorityOptions = lookups?.priorities ?? []
 
-    const handleTaskDelete = (taskId: number) => {
-        if (!confirm("Delete this task?")) return
+    const handleTaskDelete = async (taskId: number) => {
+        const ok = await confirm({
+            title: "Delete task",
+            message: "This task will be permanently removed.",
+            confirmLabel: "Delete",
+            danger: true,
+        })
+        if (!ok) return
         startTransition(async () => {
             setActionError(null)
             const res = await deleteTask(project.id, taskId)
@@ -99,31 +92,6 @@ const SingleProjectPageClient = ({ project, tasks, assignedUsers, assignableUser
         })
     }
 
-    const handleStatusChange = (statusId: number) => {
-        const newStatusName = statusOptions.find(s => s.id === statusId)?.name ?? ""
-        const n = newStatusName.toLowerCase()
-        const mapped: typeof localStatus =
-            n.includes("progress") || n.includes("open") ? "In progress"
-            : n.includes("closed") || n.includes("completed") ? "Completed"
-            : "To do"
-        // Update UI immediately — no router.refresh() needed (nothing else on this page depends on project status)
-        setLocalStatus(mapped)
-        setLocalStatusId(statusId)
-        ;(async () => {
-            const res = await changeProjectStatus(project.id, statusId)
-            if (!res.ok) { setActionError(res.error); setLocalStatus(project.status); setLocalStatusId(project.statusId) }
-        })()
-    }
-
-    const handleDeadlineChange = (date: string) => {
-        setLocalDeadline(date)
-        setDeadlinePicker(false)
-        ;(async () => {
-            const res = await changeProjectDeadline(project.id, date)
-            if (!res.ok) { setActionError(res.error); setLocalDeadline(project.deadline) }
-        })()
-    }
-
     const handleAssign = (userId: number, isResponsible: boolean) => {
         startTransition(async () => {
             setActionError(null)
@@ -146,26 +114,15 @@ const SingleProjectPageClient = ({ project, tasks, assignedUsers, assignableUser
     const displayNote = actionError ?? (apiNote || null)
 
     return (
-        <div className="flex h-full w-full flex-col gap-11">
+        <div className="flex h-full w-full flex-col gap-8">
             {displayNote ? <p className="text-error border-error rounded-md border px-4 py-3 text-sm">{displayNote}</p> : null}
 
-            <header className="flex items-center justify-between">
-                <h1>{project.projectName}</h1>
-                <ProjectSidebar
-                    status={localStatus}
-                    deadline={localDeadline}
-                    onEdit={() => setIsEditModalOpen(true)}
-                    statusOptions={statusOptions}
-                    onStatusChange={handleStatusChange}
-                    onDeadlineChange={() => setDeadlinePicker(true)}
-                />
-            </header>
-
-            <div className="grid grid-cols-2 gap-4">
-                <div className="flex flex-col gap-4">
+            <div className="grid grid-cols-1 items-start gap-4 xl:grid-cols-2">
+                <div className="flex flex-col items-stretch gap-4">
                     <ProjectDescription description={project.description} topic={project.topic} issueType={project.issueType} workpackage={project.workpackage} />
                     <TasksList
                         tasks={tasks}
+                        projectId={project.id}
                         onAdd={() => setTaskModalOpen(true)}
                         onDelete={handleTaskDelete}
                         onStatusChange={handleTaskStatusChange}
@@ -177,8 +134,8 @@ const SingleProjectPageClient = ({ project, tasks, assignedUsers, assignableUser
                     />
                 </div>
 
-                <div className="flex flex-col gap-4">
-                    <BudgetChart budget={budget} projectId={project.id} />
+                <div className="flex flex-col items-stretch gap-4">
+                    <BudgetMiniWidget budget={budget} projectId={project.id} />
                     <WarningsList projectId={project.id} initialRisks={risks} />
                     <UserList
                         users={usersWithRoles}
@@ -189,27 +146,6 @@ const SingleProjectPageClient = ({ project, tasks, assignedUsers, assignableUser
                     />
                 </div>
             </div>
-
-            <ProjectFormModal
-                isOpen={isEditModalOpen}
-                onClose={() => setIsEditModalOpen(false)}
-                onCreated={() => {
-                    setIsEditModalOpen(false)
-                    router.refresh()
-                }}
-                lookups={lookups}
-                lookupsError={lookupsError}
-                mode="edit"
-                initialProject={{ ...project, statusId: localStatusId, deadline: localDeadline }}
-            />
-
-            <DeadlinePickerModal
-                isOpen={deadlinePicker}
-                currentDate={localDeadline?.slice(0, 10) ?? ""}
-                onClose={() => setDeadlinePicker(false)}
-                onConfirm={handleDeadlineChange}
-                pending={pending}
-            />
 
             <TaskFormModal
                 isOpen={taskModalOpen}
@@ -226,6 +162,7 @@ const SingleProjectPageClient = ({ project, tasks, assignedUsers, assignableUser
                 pending={pending}
                 title="Change task deadline"
             />
+            <ConfirmModal />
         </div>
     )
 }

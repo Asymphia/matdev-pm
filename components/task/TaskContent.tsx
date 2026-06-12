@@ -9,6 +9,7 @@ import { PlusIcon } from "@heroicons/react/24/outline"
 import SearchBar from "@/components/ui/SearchBar"
 import { useRouter } from "next/navigation"
 import TaskFormModal from "@/components/task/TaskFormModal"
+import { useConfirm } from "@/hooks/useConfirm"
 import DeadlinePickerModal from "@/components/ui/DeadlinePickerModal"
 import { fetchMatdevTaskCreateForm } from "@/app/actions/task-mutations"
 import { deleteTask, changeTaskStatus, changeTaskPriority, changeTaskDeadline } from "@/app/actions/task-mutations"
@@ -24,6 +25,7 @@ const TaskContent = ({ tasks, projectId }: { tasks: TaskType[]; projectId: numbe
     const [priorityOptions, setPriorityOptions] = useState<LookupOption[]>([])
     const [pending, startTransition] = useTransition()
     const router = useRouter()
+    const { confirm, ConfirmModal } = useConfirm()
 
     useEffect(() => {
         fetchMatdevTaskCreateForm(projectId).then(res => {
@@ -44,7 +46,8 @@ const TaskContent = ({ tasks, projectId }: { tasks: TaskType[]; projectId: numbe
                 (task.description ?? "").toLowerCase().includes(term) ||
                 (task.taskCategory ?? "").toLowerCase().includes(term) ||
                 task.status.toLowerCase().includes(term) ||
-                task.priority.toLowerCase().includes(term)
+                task.priority.toLowerCase().includes(term) ||
+                (task.isMilestone && term.length >= 3 && "milestone".includes(term))
             )
         })
 
@@ -53,8 +56,14 @@ const TaskContent = ({ tasks, projectId }: { tasks: TaskType[]; projectId: numbe
         router.refresh()
     }
 
-    const handleDelete = (taskId: number) => {
-        if (!confirm("Delete this task?")) return
+    const handleDelete = async (taskId: number) => {
+        const ok = await confirm({
+            title: "Delete task",
+            message: "This task will be permanently removed.",
+            confirmLabel: "Delete",
+            danger: true,
+        })
+        if (!ok) return
         startTransition(async () => {
             setActionError(null)
             const res = await deleteTask(projectId, taskId)
@@ -98,14 +107,13 @@ const TaskContent = ({ tasks, projectId }: { tasks: TaskType[]; projectId: numbe
             {actionError && (
                 <p className="text-error border-error rounded-md border px-4 py-3 text-sm">{actionError}</p>
             )}
-            <div className="grid grid-cols-3">
-                <h2>Overview</h2>
-
-                <div className="justify-self-center">
-                    <FilterButtons options={PROJECT_STATUS_OPTIONS} current={currentFilter} setCurrent={val => setCurrentFilter(val as ProjectStatus | null)} />
-                </div>
-
-                <div className="flex items-center gap-3 justify-self-end">
+            <div className="flex flex-wrap items-center justify-between gap-4">
+                <FilterButtons
+                    options={PROJECT_STATUS_OPTIONS}
+                    current={currentFilter}
+                    setCurrent={val => setCurrentFilter(val as ProjectStatus | null)}
+                />
+                <div className="flex items-center gap-3">
                     <IconButton Icon={PlusIcon} onClick={() => setIsTaskModalOpen(true)} />
                     <SearchBar value={search} onChange={setSearch} placeholder="Search tasks…" />
                 </div>
@@ -113,6 +121,7 @@ const TaskContent = ({ tasks, projectId }: { tasks: TaskType[]; projectId: numbe
 
             <TasksList
                 tasks={filteredTasks}
+                projectId={projectId}
                 withDetails={true}
                 onDelete={handleDelete}
                 onStatusChange={(taskId, statusId) => handleStatusChange(taskId, statusId)}
@@ -132,6 +141,7 @@ const TaskContent = ({ tasks, projectId }: { tasks: TaskType[]; projectId: numbe
                 onConfirm={handleDeadlineConfirm}
                 pending={pending}
             />
+            <ConfirmModal />
         </div>
     )
 }

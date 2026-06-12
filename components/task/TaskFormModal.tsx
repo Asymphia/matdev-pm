@@ -3,8 +3,14 @@
 import { createMatdevTask, fetchMatdevTaskCreateForm } from "@/app/actions/task-mutations"
 import FormField, { formFieldClasses } from "@/components/forms/FormField"
 import FormModalShell from "@/components/forms/FormModalShell"
-import { CalendarIcon, PencilSquareIcon, UserIcon } from "@heroicons/react/24/outline"
+import { CalendarIcon, PencilSquareIcon, UserIcon, CheckIcon } from "@heroicons/react/24/outline"
 import { useEffect, useState, useTransition } from "react"
+
+function userInitials(firstName: string, lastName: string) {
+    const a = firstName.trim()[0] ?? ""
+    const b = lastName.trim()[0] ?? ""
+    return (a + b).toUpperCase() || "?"
+}
 
 interface TaskFormModalProps {
     isOpen: boolean
@@ -17,15 +23,28 @@ const TaskFormModal = ({ isOpen, onClose, onCreated, projectId }: TaskFormModalP
     const [submitError, setSubmitError] = useState<string | null>(null)
     const [lookupsError, setLookupsError] = useState<string | null>(null)
     const [lookups, setLookups] = useState<Awaited<ReturnType<typeof fetchMatdevTaskCreateForm>> | null>(null)
+    const [assignedUserIds, setAssignedUserIds] = useState<number[]>([])
     const [pending, startTransition] = useTransition()
 
-    useEffect(() => {
-        if (!isOpen) return
-        let cancelled = false
+    const loadProjectId = isOpen ? projectId : null
+    const [loadedFor, setLoadedFor] = useState<number | null>(null)
+    if (loadProjectId !== loadedFor) {
+        setLoadedFor(loadProjectId)
         setLookups(null)
         setLookupsError(null)
+    }
+
+    useEffect(() => {
+        if (!isOpen) {
+            setAssignedUserIds([])
+        }
+    }, [isOpen])
+
+    useEffect(() => {
+        if (loadProjectId == null) return
+        let cancelled = false
         ;(async () => {
-            const result = await fetchMatdevTaskCreateForm(projectId)
+            const result = await fetchMatdevTaskCreateForm(loadProjectId)
             if (cancelled) return
             if (!result.ok) {
                 setLookupsError(result.error)
@@ -36,7 +55,7 @@ const TaskFormModal = ({ isOpen, onClose, onCreated, projectId }: TaskFormModalP
         return () => {
             cancelled = true
         }
-    }, [isOpen, projectId])
+    }, [loadProjectId])
 
     function parseId(raw: FormDataEntryValue | null): number | null {
         if (raw == null || raw === "") return null
@@ -54,10 +73,6 @@ const TaskFormModal = ({ isOpen, onClose, onCreated, projectId }: TaskFormModalP
         const taskCategoryId = parseId(formData.get("taskCategoryId"))
         const startDateRaw = String(formData.get("startDate") ?? "").trim()
         const endDateRaw = String(formData.get("endDate") ?? "").trim()
-        const assignedUserIds = formData
-            .getAll("assignedUserIds")
-            .map(v => Number(v))
-            .filter(v => Number.isFinite(v) && v > 0)
 
         if (!name) {
             setSubmitError("Task name is required.")
@@ -99,15 +114,17 @@ const TaskFormModal = ({ isOpen, onClose, onCreated, projectId }: TaskFormModalP
 
     return (
         <FormModalShell isOpen={isOpen} title="New task" onClose={onClose}>
-            {lookupsError ? <p className="text-error mb-4 text-sm">Failed to load form data: {lookupsError}</p> : null}
-            {submitError ? <p className="text-error mb-4 text-sm">{submitError}</p> : null}
             <form
-                className="flex flex-col gap-4"
+                className="flex min-h-0 flex-1 flex-col"
                 onSubmit={e => {
                     e.preventDefault()
                     submitWithFormData(new FormData(e.currentTarget))
                 }}
             >
+                {lookupsError ? <p className="text-error mb-3 shrink-0 text-sm">Failed to load form data: {lookupsError}</p> : null}
+                {submitError ? <p className="text-error mb-3 shrink-0 text-sm">{submitError}</p> : null}
+
+                <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto pr-1">
                 <FormField icon={PencilSquareIcon}>
                     <input name="name" required placeholder="Task name" className={formFieldClasses} disabled={pending} />
                 </FormField>
@@ -175,19 +192,57 @@ const TaskFormModal = ({ isOpen, onClose, onCreated, projectId }: TaskFormModalP
                     </FormField>
                 </div>
 
-                <div className="flex flex-col gap-1">
-                    <span className="text-sm font-medium">Assigned users <span className="text-muted-foreground font-normal">(hold Ctrl / Cmd to select multiple)</span></span>
-                    <FormField icon={UserIcon} isSelect>
-                        <select name="assignedUserIds" multiple className={formFieldClasses} disabled={pending || !lookups || !lookups.ok}>
-                            {lookups?.ok
-                                ? lookups.data.users.map(u => (
-                                      <option key={`a-${u.userId}`} value={u.userId}>
-                                          {u.firstName} {u.lastName}
-                                      </option>
-                                  ))
-                                : null}
-                        </select>
-                    </FormField>
+                <div className="flex flex-col gap-2">
+                    <span className="text-sm font-medium">Assigned users</span>
+                    {!lookups?.ok ? (
+                        <p className="text-text-primary-100 text-sm">Loading users…</p>
+                    ) : lookups.data.users.length === 0 ? (
+                        <p className="text-text-primary-100 text-sm">No users available to assign.</p>
+                    ) : (
+                        <div className="border-border flex max-h-52 flex-col gap-1 overflow-y-auto rounded-md border p-1">
+                            {lookups.data.users.map(u => {
+                                const selected = assignedUserIds.includes(u.userId)
+                                return (
+                                    <div
+                                        key={u.userId}
+                                        className="border-border hover:bg-foreground/60 flex items-center justify-between gap-3 rounded-md border border-transparent px-2 py-2 transition-colors"
+                                    >
+                                        <div className="flex min-w-0 items-center gap-3">
+                                            <span className="bg-primary-700 text-background flex size-9 shrink-0 items-center justify-center rounded-md text-xs font-semibold">
+                                                {userInitials(u.firstName, u.lastName)}
+                                            </span>
+                                            <span className="text-text-primary-500 truncate text-sm font-medium">
+                                                {u.firstName} {u.lastName}
+                                            </span>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            disabled={pending}
+                                            onClick={() =>
+                                                setAssignedUserIds(prev =>
+                                                    selected ? prev.filter(id => id !== u.userId) : [...prev, u.userId],
+                                                )
+                                            }
+                                            className={
+                                                selected
+                                                    ? "bg-primary-700 hover:bg-primary-800 flex shrink-0 cursor-pointer items-center gap-1 rounded-md px-3 py-1.5 text-xs font-medium text-white transition-colors disabled:opacity-50"
+                                                    : "border-border text-text-primary-500 hover:bg-foreground cursor-pointer rounded-md border px-3 py-1.5 text-xs font-medium transition-colors disabled:opacity-50"
+                                            }
+                                        >
+                                            {selected ? (
+                                                <>
+                                                    <CheckIcon className="size-3.5" />
+                                                    Assigned
+                                                </>
+                                            ) : (
+                                                "Assign"
+                                            )}
+                                        </button>
+                                    </div>
+                                )
+                            })}
+                        </div>
+                    )}
                 </div>
 
                 <label className="flex items-center gap-2 text-sm">
@@ -207,11 +262,17 @@ const TaskFormModal = ({ isOpen, onClose, onCreated, projectId }: TaskFormModalP
                     />
                 </div>
 
-                <div className="mt-4 flex justify-end gap-3">
+                </div>
+
+                <div className="border-border mt-4 flex shrink-0 justify-end gap-3 border-t pt-4">
                     <button type="button" onClick={onClose} className="border-border cursor-pointer rounded-md border px-4 py-2 text-sm" disabled={pending}>
                         Cancel
                     </button>
-                    <button type="submit" className="cursor-pointer rounded-md bg-[#2D3748] px-6 py-2 text-sm text-white disabled:opacity-50" disabled={pending}>
+                    <button
+                        type="submit"
+                        className="cursor-pointer rounded-md bg-[#2D3748] px-6 py-2 text-sm text-white disabled:opacity-50"
+                        disabled={pending || Boolean(lookupsError) || (lookups !== null && !lookups.ok)}
+                    >
                         {pending ? "Adding..." : "Add task"}
                     </button>
                 </div>

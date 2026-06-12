@@ -1,5 +1,25 @@
-const ProgressBar = ({ name, progress, limit }: { name?: string; progress: number; limit?: string }) => {
-    const bgColour = progress < 100 ? (progress < 70 ? "bg-primary-500" : "bg-warning") : "bg-error"
+const ProgressBar = ({
+    name,
+    progress,
+    limit,
+    variant = "default",
+}: {
+    name?: string
+    progress: number
+    limit?: string
+    /** Budget bar uses one color scale aligned with budget charts. */
+    variant?: "default" | "budget"
+}) => {
+    const bgColour =
+        variant === "budget"
+            ? progress >= 100
+                ? "bg-error"
+                : "bg-primary-700"
+            : progress < 100
+              ? progress < 70
+                  ? "bg-primary-500"
+                  : "bg-warning"
+              : "bg-error"
 
     return (
         <div className="w-full">

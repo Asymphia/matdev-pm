@@ -9,6 +9,7 @@ import IconButton from "@/components/ui/IconButton"
 import { PlusIcon, TagIcon } from "@heroicons/react/24/outline"
 import { useRouter } from "next/navigation"
 import { useState, useTransition } from "react"
+import { useConfirm } from "@/hooks/useConfirm"
 
 type Category = { id: number; name: string }
 
@@ -27,6 +28,7 @@ const TaskCategoriesPageClient = ({ initialCategories, loadError }: Props) => {
     const [name, setName] = useState("")
     const [modalError, setModalError] = useState<string | null>(null)
     const [pending, startTransition] = useTransition()
+    const { confirm, ConfirmModal } = useConfirm()
 
     const openCreate = () => {
         setModal({ mode: "create" })
@@ -47,8 +49,14 @@ const TaskCategoriesPageClient = ({ initialCategories, loadError }: Props) => {
         setModalError(null)
     }
 
-    const handleDelete = (id: number, catName: string) => {
-        if (!confirm(`Delete category "${catName}"?`)) return
+    const handleDelete = async (id: number, catName: string) => {
+        const ok = await confirm({
+            title: "Delete category",
+            message: `Remove "${catName}"? Tasks using this category may be affected.`,
+            confirmLabel: "Delete",
+            danger: true,
+        })
+        if (!ok) return
         startTransition(async () => {
             setError(null)
             const res = await deleteTaskCategory(id)
@@ -145,6 +153,7 @@ const TaskCategoriesPageClient = ({ initialCategories, loadError }: Props) => {
                     </div>
                 </form>
             </FormModalShell>
+            <ConfirmModal />
         </div>
     )
 }

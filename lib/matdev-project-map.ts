@@ -35,6 +35,7 @@ export type ApiResponseModel<T> = {
 export type ApiGetProjectTaskListItemDTO = {
     taskId: number
     name: string
+    description?: string | null
     status: string
     priority: string
     statusId?: number | null
@@ -146,7 +147,7 @@ export function mapApiTaskToTaskType(projectId: number, t: ApiGetProjectTaskList
         id: t.taskId,
         projectId,
         name: t.name,
-        description: "",
+        description: t.description?.trim() ?? "",
         status: mapTaskStatus(t.status),
         priority: mapTaskPriority(t.priority),
         statusId: t.statusId ?? null,

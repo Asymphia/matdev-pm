@@ -10,18 +10,10 @@ interface ProjectTagProps {
 
 const ProjectTags = ({ topic, issueType, workpackage, size = "small" }: ProjectTagProps) => {
     return (
-        <div className="grid grid-cols-3">
-            <div className="justify-self-start">
-                <TextIcon text={topic} Icon={HashtagIcon} size={size} />
-            </div>
-
-            <div className="justify-self-center">
-                <TextIcon text={issueType} Icon={ExclamationTriangleIcon} size={size} />
-            </div>
-
-            <div className="justify-self-end">
-                <TextIcon text={workpackage} Icon={BriefcaseIcon} size={size} />
-            </div>
+        <div className="flex flex-wrap gap-2">
+            <TextIcon text={topic} Icon={HashtagIcon} size={size} variant="badge" />
+            <TextIcon text={issueType} Icon={ExclamationTriangleIcon} size={size} variant="badge" />
+            <TextIcon text={workpackage} Icon={BriefcaseIcon} size={size} variant="badge" />
         </div>
     )
 }

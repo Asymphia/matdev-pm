@@ -23,11 +23,14 @@ import {
     editTask,
     type TaskCreateFormLookup,
 } from "@/app/actions/task-view-mutations"
+import TaskCostsPanel from "@/components/task/TaskCostsPanel"
 import type { TaskViewData, TaskViewSubtask } from "@/lib/server/matdev-task-view"
+import type { BudgetCategoryOption } from "@/lib/server/matdev-budget"
 import { CheckIcon, XMarkIcon, PlusIcon, CalendarIcon, TagIcon, UserIcon, PencilIcon, ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useEffect, useState, useTransition } from "react"
+import { useConfirm } from "@/hooks/useConfirm"
 
 type AssignableUser = { id: number; firstName: string; lastName: string; email?: string; phone?: string }
 
@@ -58,14 +61,16 @@ interface TaskViewClientProps {
     projectId: number
     taskId: number
     taskView: TaskViewData
-    projectName: string
     allUsers: AssignableUser[]
+    budgetCategories: BudgetCategoryOption[]
+    hasBudgetPlan: boolean
 }
 
-const TaskViewClient = ({ projectId, taskId, taskView, projectName, allUsers }: TaskViewClientProps) => {
+const TaskViewClient = ({ projectId, taskId, taskView, allUsers, budgetCategories, hasBudgetPlan }: TaskViewClientProps) => {
     const router = useRouter()
     const [pending, startTransition] = useTransition()
     const [error, setError] = useState<string | null>(null)
+    const { confirm, ConfirmModal } = useConfirm()
 
     const [deadlinePicker, setDeadlinePicker] = useState<{ forSubtask?: number; isStartDate?: boolean; isEndDate?: boolean } | null>(null)
 
@@ -80,7 +85,7 @@ const TaskViewClient = ({ projectId, taskId, taskView, projectName, allUsers }: 
     const [assignModal, setAssignModal] = useState(false)
     const [userCard, setUserCard] = useState<AssignableUser | null>(null)
 
-    const { topbar, subtasks, assignments } = taskView
+    const { topbar, subtasks, assignments, costs } = taskView
 
     // Fetch lookups on mount so status/priority menus are available immediately
     useEffect(() => {
@@ -145,8 +150,14 @@ const TaskViewClient = ({ projectId, taskId, taskView, projectName, allUsers }: 
         })
     }
 
-    const handleDeleteSubtask = (subtaskId: number) => {
-        if (!confirm("Delete this subtask?")) return
+    const handleDeleteSubtask = async (subtaskId: number) => {
+        const ok = await confirm({
+            title: "Delete subtask",
+            message: "This subtask will be permanently removed.",
+            confirmLabel: "Delete",
+            danger: true,
+        })
+        if (!ok) return
         startTransition(async () => {
             setError(null)
             const res = await deleteSubtask(projectId, taskId, subtaskId)
@@ -189,16 +200,6 @@ const TaskViewClient = ({ projectId, taskId, taskView, projectName, allUsers }: 
     const displayProgress = subtasks.length > 0
         ? computeWeightedProgress(subtasks)
         : isDoneStatus(topbar.statusName) ? 100 : topbar.taskProgress
-
-    const statusMenuItems = subtaskLookups?.statuses.map(s => ({
-        label: `Status → ${s.name}`,
-        onClick: () => handleTopbarStatusChange(s.id),
-    })) ?? []
-
-    const priorityMenuItems = subtaskLookups?.priorities.map(p => ({
-        label: `Priority → ${p.name}`,
-        onClick: () => handleTopbarPriorityChange(p.id),
-    })) ?? []
 
     return (
         <div className="flex flex-col gap-8">
@@ -284,6 +285,14 @@ const TaskViewClient = ({ projectId, taskId, taskView, projectName, allUsers }: 
                     </div>
                 </div>
             </BlockWrapper>
+
+            <TaskCostsPanel
+                projectId={projectId}
+                taskId={taskId}
+                costs={costs}
+                categories={budgetCategories}
+                hasBudgetPlan={hasBudgetPlan}
+            />
 
             {/* ---- SUBTASKS ---- */}
             <BlockWrapper className="gap-5">
@@ -462,6 +471,7 @@ const TaskViewClient = ({ projectId, taskId, taskView, projectName, allUsers }: 
                 allUsers={allUsers}
                 pending={pending}
             />
+            <ConfirmModal />
         </div>
     )
 }
@@ -639,6 +649,7 @@ const EditTaskModal = ({ isOpen, onClose, onSave, topbar, statuses, priorities, 
             endDate: String(fd.get("endDate") ?? "").trim() || null,
             taskDescription: String(fd.get("taskDescription") ?? "").trim() || null,
             taskCategoryId: fd.get("taskCategoryId") ? Number(fd.get("taskCategoryId")) : null,
+            estimatedCost: fd.get("estimatedCost") ? Number(fd.get("estimatedCost")) : undefined,
         })
     }
 
@@ -694,6 +705,19 @@ const EditTaskModal = ({ isOpen, onClose, onSave, topbar, statuses, priorities, 
 
                 <FormField icon={TagIcon}>
                     <input name="taskDescription" defaultValue={topbar.taskDescription ?? ""} placeholder="Description" className={formFieldClasses} disabled={pending} />
+                </FormField>
+
+                <FormField icon={TagIcon}>
+                    <input
+                        name="estimatedCost"
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        defaultValue={topbar.estimatedCost ?? ""}
+                        placeholder="Estimated cost (PLN)"
+                        className={formFieldClasses}
+                        disabled={pending}
+                    />
                 </FormField>
 
                 <label className="flex items-center gap-2 text-sm cursor-pointer">

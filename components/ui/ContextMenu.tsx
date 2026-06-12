@@ -30,31 +30,42 @@ const ContextMenu = ({ items, disabled = false }: ContextMenuProps) => {
     }, [open])
 
     return (
-        <div ref={ref} className="relative">
+        <div ref={ref} className="relative shrink-0">
             <button
                 type="button"
                 disabled={disabled}
+                aria-expanded={open}
+                aria-haspopup="menu"
                 onClick={() => setOpen(v => !v)}
-                className="group flex h-8 w-8 cursor-pointer items-center justify-center rounded transition-colors hover:bg-secondary disabled:opacity-40"
+                className={`text-text-primary-300 hover:text-primary-700 hover:bg-foreground flex size-7 cursor-pointer items-center justify-center rounded-md transition-colors disabled:opacity-40 ${open ? "bg-foreground text-primary-700" : ""}`}
             >
-                <EllipsisVerticalIcon className="text-text-primary-300 group-hover:text-primary-700 size-5 transition-colors" />
+                <EllipsisVerticalIcon className="size-4" />
             </button>
 
             {open && (
-                <div className="bg-background border-border absolute right-0 z-30 mt-1 min-w-[140px] rounded-md border shadow-md">
-                    {items.map((item, i) => (
-                        <button
-                            key={`${item.label}-${i}`}
-                            type="button"
-                            onClick={() => {
-                                setOpen(false)
-                                item.onClick()
-                            }}
-                            className={`block w-full cursor-pointer px-4 py-2 text-left text-sm transition-colors hover:bg-secondary ${item.danger ? "text-error hover:text-error" : ""}`}
-                        >
-                            {item.label}
-                        </button>
-                    ))}
+                <div
+                    role="menu"
+                    className="bg-background border-border absolute right-0 top-full z-30 mt-1 min-w-max overflow-hidden rounded-md border py-1 shadow-md"
+                >
+                    {items.map((item, i) => {
+                        const showDivider = item.danger && i > 0 && !items[i - 1]?.danger
+                        return (
+                            <div key={`${item.label}-${i}`}>
+                                {showDivider ? <div className="border-border my-1 border-t" /> : null}
+                                <button
+                                    type="button"
+                                    role="menuitem"
+                                    onClick={() => {
+                                        setOpen(false)
+                                        item.onClick()
+                                    }}
+                                    className={`hover:bg-foreground block w-full cursor-pointer whitespace-nowrap px-3 py-2 text-left text-sm transition-colors ${item.danger ? "text-error" : "text-text-primary-500"}`}
+                                >
+                                    {item.label}
+                                </button>
+                            </div>
+                        )
+                    })}
                 </div>
             )}
         </div>

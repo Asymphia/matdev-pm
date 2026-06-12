@@ -1,6 +1,6 @@
-import ContextMenu from "@/components/ui/ContextMenu"
 import { UserType } from "@/lib/data"
-import { ChevronDownIcon } from "@heroicons/react/24/outline"
+import Th from "@/components/ui/Th"
+import DeleteIconButton from "@/components/ui/DeleteIconButton"
 
 interface UsersTableProps {
     users: UserType[]
@@ -9,37 +9,67 @@ interface UsersTableProps {
     actionPending?: boolean
 }
 
+function initials(firstName: string, secondName: string) {
+    const a = firstName.trim()[0] ?? ""
+    const b = secondName.trim()[0] ?? ""
+    return (a + b).toUpperCase() || "?"
+}
+
 const UsersTable = ({ users, onEdit, onDelete, actionPending }: UsersTableProps) => {
     return (
-        <div className="flex flex-col gap-3">
-            <div className="grid w-full grid-cols-[1fr_1fr_1fr_80px] justify-items-center gap-4 font-semibold">
-                <button type="button" className="flex flex-row items-center gap-1">
-                    <div>Name</div>
-                    <ChevronDownIcon className="size-4" />
-                </button>
-                <div>Email</div>
-                <div>Phone</div>
-                <div>Manage</div>
-            </div>
-            <div className="flex flex-col gap-4">
-                {users.map(user => {
-                    const menuItems = [
-                        ...(onEdit ? [{ label: "Edit", onClick: () => onEdit(user) }] : []),
-                        ...(onDelete ? [{ label: "Delete", onClick: () => onDelete(user), danger: true }] : []),
-                    ]
-                    return (
-                        <div key={user.id} className="grid w-full grid-cols-[1fr_1fr_1fr_80px] items-center justify-items-center gap-4">
-                            <div>{user.firstName} {user.secondName}</div>
-                            <div>{user.email}</div>
-                            <div className="font-medium">{user.phone}</div>
-                            <div className="flex justify-center">
-                                {menuItems.length > 0 && <ContextMenu items={menuItems} disabled={actionPending} />}
+        <table className="w-full text-sm">
+            <thead>
+                <tr className="border-border border-b">
+                    <Th>Name</Th>
+                    <Th>Email</Th>
+                    <Th>Phone</Th>
+                    <Th align="center">Actions</Th>
+                </tr>
+            </thead>
+            <tbody className="divide-border divide-y">
+                {users.map(user => (
+                    <tr key={user.id} className="hover:bg-foreground/60 transition-colors">
+                        <td className="py-3 pr-4">
+                            <div className="flex min-w-0 items-center gap-3">
+                                <span className="bg-primary-700 text-background flex size-9 shrink-0 items-center justify-center rounded-md text-xs font-semibold">
+                                    {initials(user.firstName, user.secondName)}
+                                </span>
+                                <span className="text-text-primary-500 truncate font-medium">
+                                    {user.firstName} {user.secondName}
+                                </span>
                             </div>
-                        </div>
-                    )
-                })}
-            </div>
-        </div>
+                        </td>
+                        <td className="text-text-primary-300 py-3 pr-4">
+                            {user.email?.trim() ? user.email : "—"}
+                        </td>
+                        <td className="text-text-primary-300 py-3 pr-4">
+                            {user.phone?.trim() ? user.phone : "—"}
+                        </td>
+                        <td className="py-3">
+                            <div className="flex items-center justify-center gap-1">
+                                {onEdit ? (
+                                    <button
+                                        type="button"
+                                        disabled={actionPending}
+                                        onClick={() => onEdit(user)}
+                                        className="text-text-primary-300 hover:text-primary-700 rounded px-2 py-1 text-xs transition-colors disabled:opacity-40"
+                                    >
+                                        Edit
+                                    </button>
+                                ) : null}
+                                {onDelete ? (
+                                    <DeleteIconButton
+                                        disabled={actionPending}
+                                        onClick={() => onDelete(user)}
+                                        title="Delete user"
+                                    />
+                                ) : null}
+                            </div>
+                        </td>
+                    </tr>
+                ))}
+            </tbody>
+        </table>
     )
 }
 

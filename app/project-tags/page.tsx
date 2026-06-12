@@ -8,6 +8,7 @@ const TagsPage = async () => {
             issues={data.issues}
             topics={data.topics}
             workpackages={data.workpackages}
+            taskCategories={data.taskCategories}
             loadError={error}
         />
     )

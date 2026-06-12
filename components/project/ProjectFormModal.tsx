@@ -107,18 +107,19 @@ const ProjectFormModal = ({ isOpen, onClose, onCreated, lookups, lookupsError, m
 
     return (
         <FormModalShell isOpen={isOpen} title={isEdit ? "Edit project" : "New project"} onClose={onClose}>
-            {lookupsError ? (
-                <p className="text-error mb-4 text-sm">Nie załadowano list (topic, status, …): {lookupsError}</p>
-            ) : null}
-            {submitError ? <p className="text-error mb-4 text-sm">{submitError}</p> : null}
-
             <form
-                className="flex flex-col gap-4"
+                className="flex min-h-0 flex-1 flex-col"
                 onSubmit={e => {
                     e.preventDefault()
                     submitWithFormData(new FormData(e.currentTarget))
                 }}
             >
+                {lookupsError ? (
+                    <p className="text-error mb-3 shrink-0 text-sm">Nie załadowano list (topic, status, …): {lookupsError}</p>
+                ) : null}
+                {submitError ? <p className="text-error mb-3 shrink-0 text-sm">{submitError}</p> : null}
+
+                <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto pr-1">
                 <FormField icon={LinkIcon}>
                     <input
                         name="name"
@@ -273,15 +274,16 @@ const ProjectFormModal = ({ isOpen, onClose, onCreated, lookups, lookupsError, m
                     <PencilSquareIcon className="text-text-primary-300 absolute top-3 left-3 h-5 w-5" />
                     <textarea
                         name="description"
-                        rows={4}
+                        rows={3}
                         placeholder="Description"
                         defaultValue={initialProject?.description ?? ""}
                         disabled={pending || !canUseForm}
                         className="border-border w-full resize-none rounded-md border bg-transparent py-3 pr-4 pl-10"
                     />
                 </div>
+                </div>
 
-                <div className="mt-4 flex justify-end gap-3">
+                <div className="border-border mt-4 flex shrink-0 justify-end gap-3 border-t pt-4">
                     <button
                         type="button"
                         onClick={onClose}

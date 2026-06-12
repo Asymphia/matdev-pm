@@ -16,40 +16,49 @@ export type TagCollections = {
     issues: NamedItem[]
     topics: NamedItem[]
     workpackages: NamedItem[]
+    taskCategories: NamedItem[]
 }
 
 export async function fetchTagCollections(): Promise<{ data: TagCollections; error: string | null }> {
     try {
-        const [issuesRes, topicsRes, workpackagesRes] = await Promise.all([
+        const [issuesRes, topicsRes, workpackagesRes, categoriesRes] = await Promise.all([
             matdevFetch("/api/issuetype"),
             matdevFetch("/api/topic"),
             matdevFetch("/api/workpackage"),
+            matdevFetch("/api/taskcategory"),
         ])
 
-        if (!issuesRes.ok || !topicsRes.ok || !workpackagesRes.ok) {
+        if (!issuesRes.ok || !topicsRes.ok || !workpackagesRes.ok || !categoriesRes.ok) {
             return {
-                data: { issues: [], topics: [], workpackages: [] },
-                error: `HTTP ${issuesRes.status}/${topicsRes.status}/${workpackagesRes.status}`,
+                data: { issues: [], topics: [], workpackages: [], taskCategories: [] },
+                error: `HTTP ${issuesRes.status}/${topicsRes.status}/${workpackagesRes.status}/${categoriesRes.status}`,
             }
         }
 
-        const [issuesJson, topicsJson, workpackagesJson] = (await Promise.all([
+        const [issuesJson, topicsJson, workpackagesJson, categoriesJson] = (await Promise.all([
             issuesRes.json(),
             topicsRes.json(),
             workpackagesRes.json(),
-        ])) as [ApiResponseModel<ApiIssueType[]>, ApiResponseModel<ApiTopic[]>, ApiResponseModel<ApiWorkpackage[]>]
+            categoriesRes.json(),
+        ])) as [
+            ApiResponseModel<ApiIssueType[]>,
+            ApiResponseModel<ApiTopic[]>,
+            ApiResponseModel<ApiWorkpackage[]>,
+            ApiResponseModel<ApiTaskCategory[]>,
+        ]
 
         return {
             data: {
                 issues: (issuesJson.data ?? []).map(i => ({ id: i.issueTypeId, name: i.name })),
                 topics: (topicsJson.data ?? []).map(t => ({ id: t.topicId, name: t.name })),
                 workpackages: (workpackagesJson.data ?? []).map(w => ({ id: w.workpackageId, name: w.name })),
+                taskCategories: (categoriesJson.data ?? []).map(c => ({ id: c.taskCategoryId, name: c.name })),
             },
             error: null,
         }
     } catch (e) {
         return {
-            data: { issues: [], topics: [], workpackages: [] },
+            data: { issues: [], topics: [], workpackages: [], taskCategories: [] },
             error: e instanceof Error ? e.message : "Unknown error",
         }
     }

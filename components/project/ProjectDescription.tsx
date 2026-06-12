@@ -1,4 +1,5 @@
 import BlockWrapper from "@/components/ui/BlockWrapper"
+import CardTitle from "@/components/ui/CardTitle"
 import ProjectTags from "@/components/project/ProjectTags"
 
 interface ProjectDescriptionProps {
@@ -10,8 +11,8 @@ interface ProjectDescriptionProps {
 
 const ProjectDescription = ({ description, topic, issueType, workpackage }: ProjectDescriptionProps) => {
     return (
-        <BlockWrapper className="gap-5">
-            <h2>Description</h2>
+        <BlockWrapper className="flex w-full flex-col gap-5 self-start">
+            <CardTitle>Description</CardTitle>
 
             <p>{description}</p>
 

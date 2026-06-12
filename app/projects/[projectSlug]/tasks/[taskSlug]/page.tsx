@@ -3,6 +3,7 @@ import TaskViewClient from "@/components/task/TaskViewClient"
 import { fetchMatdevProjectById } from "@/lib/server/matdev-projects"
 import { fetchTaskView } from "@/lib/server/matdev-task-view"
 import { fetchMatdevUsers } from "@/lib/server/matdev-users"
+import { fetchBudgetCategories, fetchProjectBudget } from "@/lib/server/matdev-budget"
 import Link from "next/link"
 import { ChevronRightIcon } from "@heroicons/react/24/outline"
 
@@ -14,10 +15,12 @@ const TaskPage = async ({ params }: { params: Promise<{ projectSlug: string; tas
         notFound()
     }
 
-    const [{ project }, { data: taskView, error: taskError }, { users }] = await Promise.all([
+    const [{ project }, { data: taskView, error: taskError }, { users }, budget, budgetCategories] = await Promise.all([
         fetchMatdevProjectById(projectId),
         fetchTaskView(projectId, taskId),
         fetchMatdevUsers(),
+        fetchProjectBudget(projectId),
+        fetchBudgetCategories(projectId),
     ])
 
     if (!project) notFound()
@@ -33,28 +36,33 @@ const TaskPage = async ({ params }: { params: Promise<{ projectSlug: string; tas
                 <p className="text-error border-error rounded-md border px-4 py-3 text-sm">{taskError}</p>
             )}
 
-            <header className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Link href="/projects" className="hover:text-primary-700 transition-colors">Projects</Link>
-                <ChevronRightIcon className="size-4" />
-                <Link href={`/projects/${projectId}`} className="hover:text-primary-700 transition-colors">{project.projectName}</Link>
-                <ChevronRightIcon className="size-4" />
-                <Link href={`/projects/${projectId}/tasks`} className="hover:text-primary-700 transition-colors">Tasks</Link>
-                <ChevronRightIcon className="size-4" />
-                <span className="text-foreground font-medium">{taskView.topbar.taskName}</span>
-            </header>
+            {taskView && (
+                <>
+                    <header className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <Link href="/projects" className="hover:text-primary-700 transition-colors">Projects</Link>
+                        <ChevronRightIcon className="size-4" />
+                        <Link href={`/projects/${projectId}`} className="hover:text-primary-700 transition-colors">{project.projectName}</Link>
+                        <ChevronRightIcon className="size-4" />
+                        <Link href={`/projects/${projectId}/tasks`} className="hover:text-primary-700 transition-colors">Tasks</Link>
+                        <ChevronRightIcon className="size-4" />
+                        <span className="text-foreground font-medium">{taskView.topbar.taskName}</span>
+                    </header>
 
-            <h1>
-                {project.projectName}
-                <span className="font-normal"> / {taskView.topbar.taskName}</span>
-            </h1>
+                    <h1>
+                        {project.projectName}
+                        <span className="font-normal"> / {taskView.topbar.taskName}</span>
+                    </h1>
 
-            <TaskViewClient
-                projectId={projectId}
-                taskId={taskId}
-                taskView={taskView}
-                projectName={project.projectName}
-                allUsers={allUsers}
-            />
+                    <TaskViewClient
+                        projectId={projectId}
+                        taskId={taskId}
+                        taskView={taskView}
+                        allUsers={allUsers}
+                        budgetCategories={budgetCategories}
+                        hasBudgetPlan={budget != null}
+                    />
+                </>
+            )}
         </div>
     )
 }

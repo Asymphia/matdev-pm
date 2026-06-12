@@ -3,6 +3,7 @@ import { ChevronRightIcon, ArrowUpRightIcon } from "@heroicons/react/24/outline"
 import StatusItem, { type StatusItemType } from "@/components/ui/StatusItem"
 import ProgressBar from "@/components/project/ProgressBar"
 import ContextMenu, { type ContextMenuItem } from "@/components/ui/ContextMenu"
+import DeleteIconButton from "@/components/ui/DeleteIconButton"
 import Link from "next/link"
 import { CheckIcon, XMarkIcon } from "@heroicons/react/24/outline"
 
@@ -59,12 +60,12 @@ const TaskRow = ({
               }))
             : []),
         ...(onDeadlineChange ? [{ label: "Change deadline", onClick: () => onDeadlineChange(task.id, task.endDate) }] : []),
-        ...(onDelete ? [{ label: "Delete task", onClick: () => onDelete(task.id), danger: true }] : []),
+        ...(onDelete && isSubTask ? [{ label: "Delete task", onClick: () => onDelete(task.id), danger: true }] : []),
     ]
 
     return (
-        <tr key={task.id}>
-            <td className="text-center">
+        <tr key={task.id} className="align-middle">
+            <td className="py-3 text-left">
                 <div className={`group flex flex-nowrap items-center gap-2 ${hasSubTasks ? "cursor-pointer" : ""}`} onClick={onToggle}>
                     <ChevronRightIcon
                         className={`text-text-primary-300 group-hover:text-primary-700 group-active:text-primary-500 size-5 transition-all ${!hasSubTasks ? "invisible" : ""} ${isExpanded ? "rotate-90" : ""} ${isSubTask ? "ml-5" : ""}`}
@@ -72,40 +73,48 @@ const TaskRow = ({
                     <p className="group-hover:text-primary-700 group-active:text-primary-500">{task.name}</p>
                 </div>
             </td>
-            <td className="text-center">{task.startDate}</td>
-            <td className="text-center">{task.endDate}</td>
-            <td>
+            <td className="text-text-primary-500 py-3 text-center tabular-nums">{task.startDate}</td>
+            <td className="text-text-primary-500 py-3 text-center tabular-nums">{task.endDate}</td>
+            <td className="py-3">
                 <div className="flex justify-center">
                     <StatusItem status={task.priority as StatusItemType} />
                 </div>
             </td>
-            <td>
+            <td className="py-3">
                 <div className="flex justify-center">
                     <StatusItem status={task.status as StatusItemType} />
                 </div>
             </td>
             {isMilestone !== null && (
-                <td>
+                <td className="py-3">
                     <div className="flex justify-center">{isMilestone ? <CheckIcon className="text-text-primary-300 size-6" /> : <XMarkIcon className="text-text-primary-300 size-6" />}</div>
                 </td>
             )}
-            {category !== null && <td className="text-center">{task.taskCategory}</td>}
+            {category !== null && <td className="text-text-primary-500 py-3 text-center">{task.taskCategory}</td>}
             {progress !== null && (
-                <td className="text-center">
+                <td className="py-3 text-center">
                     <ProgressBar progress={progress} />
                 </td>
             )}
-            <td>
-                <div className="flex justify-center">
+            <td className="py-3">
+                <div className="flex items-center justify-center gap-1">
                     {menuItems.length > 0 ? (
                         <ContextMenu items={menuItems} disabled={actionPending} />
-                    ) : (
-                        <span className="text-text-primary-300 block w-8 h-8" />
-                    )}
+                    ) : null}
+                    {!isSubTask && onDelete ? (
+                        <DeleteIconButton
+                            disabled={actionPending}
+                            onClick={() => onDelete(task.id)}
+                            title="Delete task"
+                        />
+                    ) : null}
+                    {menuItems.length === 0 && (isSubTask || !onDelete) ? (
+                        <span className="text-text-primary-300 block size-8" />
+                    ) : null}
                 </div>
             </td>
             {href !== null && (
-                <td>
+                <td className="py-3">
                     <Link href={href} className="group flex w-full justify-center">
                         <ArrowUpRightIcon className="text-text-primary-300 group-hover:text-primary-700 group-active:text-primary-500 size-5 transition-all" />
                     </Link>
