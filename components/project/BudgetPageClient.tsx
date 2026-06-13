@@ -395,7 +395,6 @@ const BudgetPageClient = ({ projectId, initialBudget, categories, initialLines, 
                                 <th className="py-2 text-left">Category</th>
                                 <th className="py-2 text-left">Task</th>
                                 <th className="py-2 text-left">Description</th>
-                                <th className="py-2 text-left">Field</th>
                                 <th className="py-2 text-right">Amount</th>
                                 <th className="py-2" />
                             </tr>
@@ -420,7 +419,6 @@ const BudgetPageClient = ({ projectId, initialBudget, categories, initialLines, 
                                         )}
                                     </td>
                                     <td className="py-2">{e.description}</td>
-                                    <td className="text-text-primary-100 py-2">{e.field}</td>
                                     <td className="py-2 text-right font-medium">{formatNumber(e.amount)} PLN</td>
                                     <td className="py-2 text-right">
                                         <div className="flex justify-end gap-1">

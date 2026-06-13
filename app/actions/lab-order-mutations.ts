@@ -101,23 +101,6 @@ export async function deleteLabOrder(projectId: number, labOrderId: number): Pro
     }
 }
 
-async function uploadReport(
-    projectId: number,
-    labOrderId: number,
-    kind: "test" | "final",
-    file: File
-): Promise<OrderResult> {
-    const formData = new FormData()
-    formData.append("file", file)
-    const res = await matdevFetch(
-        `/api/project/${projectId}/lab-orders/${labOrderId}/reports/${kind}`,
-        { method: "POST", body: formData }
-    )
-    if (!res.ok) return { ok: false, error: await parseError(res) }
-    const json = await res.json()
-    return { ok: true, data: json.data }
-}
-
 async function deleteReport(
     projectId: number,
     labOrderId: number,
@@ -130,30 +113,6 @@ async function deleteReport(
     if (!res.ok) return { ok: false, error: await parseError(res) }
     const json = await res.json()
     return { ok: true, data: json.data }
-}
-
-export async function uploadLabOrderTestReport(
-    projectId: number,
-    labOrderId: number,
-    file: File
-): Promise<OrderResult> {
-    try {
-        return await uploadReport(projectId, labOrderId, "test", file)
-    } catch (e) {
-        return { ok: false, error: e instanceof Error ? e.message : "Unknown error" }
-    }
-}
-
-export async function uploadLabOrderFinalReport(
-    projectId: number,
-    labOrderId: number,
-    file: File
-): Promise<OrderResult> {
-    try {
-        return await uploadReport(projectId, labOrderId, "final", file)
-    } catch (e) {
-        return { ok: false, error: e instanceof Error ? e.message : "Unknown error" }
-    }
 }
 
 export async function deleteLabOrderTestReport(projectId: number, labOrderId: number): Promise<OrderResult> {

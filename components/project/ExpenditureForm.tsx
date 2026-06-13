@@ -43,7 +43,6 @@ const ExpenditureForm = ({
         expenditure ? expenditure.transactionDate.slice(0, 10) : new Date().toISOString().slice(0, 10),
     )
     const [description, setDescription] = useState(expenditure?.description ?? "")
-    const [field, setField] = useState(expenditure?.field ?? "")
     const [error, setError] = useState<string | null>(null)
     const [pending, startTransition] = useTransition()
 
@@ -56,9 +55,10 @@ const ExpenditureForm = ({
         startTransition(async () => {
             setError(null)
             const linkedTask = taskId === "" ? null : Number(taskId)
+            const legacyField = expenditure?.field ?? ""
             const res =
                 mode === "create"
-                    ? await addExpenditure(projectId, Number(categoryId), parsed, date, description, field, linkedTask)
+                    ? await addExpenditure(projectId, Number(categoryId), parsed, date, description, legacyField, linkedTask)
                     : await updateExpenditure(
                           projectId,
                           expenditure!.expenditureId,
@@ -66,7 +66,7 @@ const ExpenditureForm = ({
                           parsed,
                           date,
                           description,
-                          field,
+                          legacyField,
                           linkedTask,
                       )
             if (!res.ok) {
@@ -126,15 +126,6 @@ const ExpenditureForm = ({
                         value={description}
                         onChange={e => setDescription(e.target.value)}
                         className="border-border min-w-48 rounded-md border px-3 py-1.5 text-sm"
-                        disabled={pending}
-                    />
-                </div>
-                <div className="flex flex-col gap-1">
-                    <label className="text-xs font-medium text-text-primary-300">Field</label>
-                    <input
-                        value={field}
-                        onChange={e => setField(e.target.value)}
-                        className="border-border w-32 rounded-md border px-3 py-1.5 text-sm"
                         disabled={pending}
                     />
                 </div>

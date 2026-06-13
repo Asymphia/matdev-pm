@@ -2,6 +2,9 @@ import type { NextConfig } from "next"
 
 const nextConfig: NextConfig = {
     output: "standalone",
+    serverActions: {
+        bodySizeLimit: "52mb",
+    },
     images: {
         unoptimized: true,
     },

@@ -17,12 +17,14 @@ import {
     deleteLabOrderTestReport,
     fetchLabOrders,
     updateLabOrder,
-    uploadLabOrderFinalReport,
-    uploadLabOrderTestReport,
     type CreateLabOrderInput,
     type LabOrderFileActions,
     type UpdateLabOrderInput,
 } from "@/app/actions/lab-order-mutations"
+import {
+    uploadLabOrderFinalReportClient,
+    uploadLabOrderTestReportClient,
+} from "@/lib/lab-order-client"
 import { getLabOrderReportDownloadUrl, isExternalReportLink, type LabReportKind } from "@/lib/lab-order-files"
 import { useConfirm } from "@/hooks/useConfirm"
 import AlertBanner from "@/components/ui/AlertBanner"
@@ -111,11 +113,11 @@ const LabOrdersPageClient = ({ projectId, initialOrders, statuses, initialApiErr
             if (!res.ok) return res.error
         }
         if (files.testReportFile) {
-            const res = await uploadLabOrderTestReport(projectId, labOrderId, files.testReportFile)
+            const res = await uploadLabOrderTestReportClient(projectId, labOrderId, files.testReportFile)
             if (!res.ok) return res.error
         }
         if (files.finalReportFile) {
-            const res = await uploadLabOrderFinalReport(projectId, labOrderId, files.finalReportFile)
+            const res = await uploadLabOrderFinalReportClient(projectId, labOrderId, files.finalReportFile)
             if (!res.ok) return res.error
         }
         return null

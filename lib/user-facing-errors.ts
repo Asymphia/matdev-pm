@@ -23,6 +23,9 @@ export function toUserFacingError(error: unknown, context?: "api" | "network" | 
     if (context === "upload" && lower.includes("not allowed")) {
         return "Niedozwolony typ pliku. Dozwolone: PDF, Office, CSV, PNG, JPG."
     }
+    if (lower.includes("access to the path") && lower.includes("is denied")) {
+        return "Brak uprawnień do zapisu plików na serwerze. Przebuduj kontener API (docker compose build matdev.api)."
+    }
     if (raw.length > 180) {
         return `${raw.slice(0, 177)}…`
     }
