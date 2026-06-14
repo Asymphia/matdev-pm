@@ -74,11 +74,11 @@ if (Test-Path $PublicSrc) {
 
 # Bundled Node.js for Next standalone server (Electron exe cannot run as Node when packaged)
 Write-Host ''
-Write-Host 'Pakowanie node.exe...' -ForegroundColor Yellow
-$NodeCmd = Get-Command node -ErrorAction Stop
+Write-Host 'Pakowanie Node.js runtime...' -ForegroundColor Yellow
+$NodeSrcDir = Split-Path (Get-Command node).Source -Parent
 if (Test-Path $NodeOut) { Remove-Item $NodeOut -Recurse -Force }
 New-Item -ItemType Directory -Path $NodeOut | Out-Null
-Copy-Item $NodeCmd.Source (Join-Path $NodeOut 'node.exe') -Force
+Get-ChildItem $NodeSrcDir -File | Copy-Item -Destination $NodeOut -Force
 
 # Electron compile + loading.html
 Write-Host ''

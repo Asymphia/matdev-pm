@@ -7,7 +7,7 @@ const nextConfig: NextConfig = {
     },
     // Desktop runs Next over http://127.0.0.1 — relative assetPrefix breaks the server.
     assetPrefix: process.env.MATDEV_DESKTOP_BUILD === "1" ? undefined : "",
-    trailingSlash: true,
+    trailingSlash: process.env.MATDEV_DESKTOP_BUILD !== "1",
 }
 
 export default nextConfig

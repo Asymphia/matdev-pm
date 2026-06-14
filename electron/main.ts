@@ -1,4 +1,4 @@
-import { app, BrowserWindow, dialog } from "electron"
+import { app, BrowserWindow, dialog, session } from "electron"
 import { spawn, ChildProcess } from "child_process"
 import path from "path"
 import fs from "fs"
@@ -9,6 +9,7 @@ import {
     startEmbeddedPostgres,
     stopEmbeddedPostgres,
 } from "./embedded-postgres"
+import { appendStartupLog, clearStartupLog, getStartupLogPath } from "./startup-log"
 
 const isDev = !app.isPackaged
 const FRONTEND_PORT = "3000"
@@ -21,6 +22,26 @@ let loadingWindow: BrowserWindow | null = null
 let apiProcess: ChildProcess | null = null
 let nextProcess: ChildProcess | null = null
 let postgresProcess: ChildProcess | null = null
+
+/** Next/Turbopack sometimes requests ./_next/... from nested routes — rewrite to /_next/... */
+const installNextAssetRedirect = (): void => {
+    if (isDev) return
+    session.defaultSession.webRequest.onBeforeRequest({ urls: [`${FRONTEND_URL}/*`] }, (details, callback) => {
+        try {
+            const url = new URL(details.url)
+            const marker = "/_next/"
+            const idx = url.pathname.indexOf(marker)
+            if (idx > 0) {
+                url.pathname = url.pathname.slice(idx)
+                callback({ redirectURL: url.toString() })
+                return
+            }
+        } catch {
+            /* ignore */
+        }
+        callback({})
+    })
+}
 
 const setLoadingStatus = (text: string) => {
     loadingWindow?.webContents.executeJavaScript(
@@ -57,10 +78,11 @@ const waitForHttp = (url: string, timeoutMs = 120_000, intervalMs = 500): Promis
     })
 
 const spawnLogged = (label: string, command: string, args: string[], options: Parameters<typeof spawn>[2]) => {
+    appendStartupLog(`spawn ${label}: ${command} ${args.join(" ")}`)
     const child = spawn(command, args, { ...options, windowsHide: true })
-    child.stdout?.on("data", d => console.log(`[${label}]`, d.toString()))
-    child.stderr?.on("data", d => console.error(`[${label}]`, d.toString()))
-    child.on("exit", code => console.log(`[${label}] exit`, code))
+    child.stdout?.on("data", d => appendStartupLog(`[${label}] ${d.toString().trim()}`))
+    child.stderr?.on("data", d => appendStartupLog(`[${label} err] ${d.toString().trim()}`))
+    child.on("exit", code => appendStartupLog(`[${label}] exit ${code}`))
     return child
 }
 
@@ -172,10 +194,12 @@ const createMainWindow = () => {
         loadingWindow = null
         mainWindow?.show()
     })
-    mainWindow.loadURL(isDev ? "http://localhost:3000" : FRONTEND_URL)
+    mainWindow.loadURL(isDev ? "http://localhost:3000/" : `${FRONTEND_URL}/`)
 }
 
 const bootstrap = async () => {
+    clearStartupLog()
+    installNextAssetRedirect()
     createLoadingWindow()
 
     try {
@@ -189,10 +213,10 @@ const bootstrap = async () => {
 
             nextProcess = startNext()
             setLoadingStatus("Czekam na interfejs…")
-            await waitForHttp(FRONTEND_URL, 120_000)
+            await waitForHttp(`${FRONTEND_URL}/`, 120_000)
         } else {
             setLoadingStatus("Łączenie z Next.js dev (localhost:3000)…")
-            await waitForHttp("http://localhost:3000", 60_000)
+            await waitForHttp("http://localhost:3000/", 60_000)
             try {
                 await waitForHttp(`${API_BASE}/api/health`, 5000)
             } catch {
@@ -204,11 +228,11 @@ const bootstrap = async () => {
         createMainWindow()
     } catch (e) {
         const msg = e instanceof Error ? e.message : String(e)
-        console.error(msg)
+        appendStartupLog(`FATAL: ${msg}`)
         showLoadingError(msg)
         dialog.showErrorBox(
             "MatDev PM — błąd uruchomienia",
-            "Aplikacja nie mogła wystartować. Spróbuj uruchomić ponownie. Jeśli problem wraca, zainstaluj aplikację od nowa.",
+            `${msg}\n\nLog: ${getStartupLogPath()}`,
         )
     }
 }
