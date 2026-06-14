@@ -97,16 +97,20 @@ const startNext = (): ChildProcess => {
 
     const nextDir = path.join(process.resourcesPath, "next")
     const serverJs = path.join(nextDir, "server.js")
+    const nodeExe = path.join(process.resourcesPath, "node", "node.exe")
     if (!fs.existsSync(serverJs)) {
         throw new Error(`Brak server.js w ${nextDir}`)
     }
+    if (!fs.existsSync(nodeExe)) {
+        throw new Error(`Brak node.exe w ${path.dirname(nodeExe)}`)
+    }
 
     setLoadingStatus("Uruchamianie interfejsu…")
-    return spawnLogged("next", process.execPath, [serverJs], {
+    return spawnLogged("next", nodeExe, [serverJs], {
         cwd: nextDir,
         env: {
             ...process.env,
-            ELECTRON_RUN_AS_NODE: "1",
+            NODE_ENV: "production",
             PORT: FRONTEND_PORT,
             HOSTNAME: "127.0.0.1",
             MATDEV_API_BASE_URL: API_BASE,

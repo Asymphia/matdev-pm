@@ -9,6 +9,7 @@ $BackendRoot = Join-Path (Split-Path -Parent $FrontendRoot) 'matdev-pm-backend'
 $ResourcesRoot = Join-Path $FrontendRoot 'desktop-resources'
 $ApiOut = Join-Path $ResourcesRoot 'api'
 $NextOut = Join-Path $ResourcesRoot 'next'
+$NodeOut = Join-Path $ResourcesRoot 'node'
 
 Write-Host '=== MatDev PM - build instalatora Windows ===' -ForegroundColor Cyan
 Write-Host ('Frontend: {0}' -f $FrontendRoot)
@@ -45,6 +46,7 @@ Write-Host '[2/5] Build Next.js...' -ForegroundColor Yellow
 Push-Location $FrontendRoot
 $env:MATDEV_API_BASE_URL = 'http://127.0.0.1:5196'
 $env:NEXT_PUBLIC_MATDEV_API_BASE_URL = 'http://127.0.0.1:5196'
+$env:MATDEV_DESKTOP_BUILD = '1'
 npm run build
 if ($LASTEXITCODE -ne 0) { Pop-Location; exit 1 }
 Pop-Location
@@ -69,6 +71,14 @@ Copy-Item $StaticSrc $NextStaticDest -Recurse -Force
 if (Test-Path $PublicSrc) {
     Copy-Item $PublicSrc (Join-Path $NextOut 'public') -Recurse -Force
 }
+
+# Bundled Node.js for Next standalone server (Electron exe cannot run as Node when packaged)
+Write-Host ''
+Write-Host 'Pakowanie node.exe...' -ForegroundColor Yellow
+$NodeCmd = Get-Command node -ErrorAction Stop
+if (Test-Path $NodeOut) { Remove-Item $NodeOut -Recurse -Force }
+New-Item -ItemType Directory -Path $NodeOut | Out-Null
+Copy-Item $NodeCmd.Source (Join-Path $NodeOut 'node.exe') -Force
 
 # Electron compile + loading.html
 Write-Host ''
