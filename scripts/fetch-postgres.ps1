@@ -11,6 +11,7 @@ $CacheDir = Join-Path $FrontendRoot 'desktop-resources/.cache'
 
 if (Test-Path $Initdb) {
     Write-Host ('PostgreSQL OK: {0}' -f $Initdb) -ForegroundColor Green
+    powershell -ExecutionPolicy Bypass -File (Join-Path $PSScriptRoot 'prune-postgres.ps1')
     exit 0
 }
 
@@ -49,5 +50,7 @@ Remove-Item $ExtractRoot -Recurse -Force -ErrorAction SilentlyContinue
 if (-not (Test-Path $Initdb)) {
     throw 'initdb.exe nie znaleziony po rozpakowaniu'
 }
+
+powershell -ExecutionPolicy Bypass -File (Join-Path $PSScriptRoot 'prune-postgres.ps1')
 
 Write-Host ('Gotowe: {0}' -f $Dest) -ForegroundColor Green

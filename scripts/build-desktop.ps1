@@ -73,6 +73,10 @@ if (Test-Path $PublicSrc) {
 # Electron compile + loading.html
 Write-Host ''
 Write-Host '[5/5] Electron + NSIS installer...' -ForegroundColor Yellow
+if (Test-Path (Join-Path $FrontendRoot 'release')) {
+    Remove-Item (Join-Path $FrontendRoot 'release') -Recurse -Force -ErrorAction SilentlyContinue
+    Start-Sleep -Seconds 2
+}
 Push-Location $FrontendRoot
 npx tsc -p tsconfig.electron.json
 Copy-Item (Join-Path $FrontendRoot 'electron/loading.html') (Join-Path $FrontendRoot 'dist-electron/loading.html') -Force
