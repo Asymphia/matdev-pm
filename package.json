@@ -55,7 +55,8 @@
         ],
         "win": {
             "target": ["nsis"],
-            "artifactName": "MatDev-PM-Setup-${version}.${ext}"
+            "artifactName": "MatDev-PM-Setup-${version}.${ext}",
+            "signAndEditExecutable": false
         },
         "nsis": {
             "oneClick": false,

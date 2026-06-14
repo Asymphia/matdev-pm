@@ -76,6 +76,7 @@ Write-Host '[5/5] Electron + NSIS installer...' -ForegroundColor Yellow
 Push-Location $FrontendRoot
 npx tsc -p tsconfig.electron.json
 Copy-Item (Join-Path $FrontendRoot 'electron/loading.html') (Join-Path $FrontendRoot 'dist-electron/loading.html') -Force
+$env:CSC_IDENTITY_AUTO_DISCOVERY = 'false'
 npx electron-builder --win nsis
 $code = $LASTEXITCODE
 Pop-Location
