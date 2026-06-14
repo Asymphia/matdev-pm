@@ -94,3 +94,5 @@ dist-electron/
 release/
 desktop-resources/api/
 desktop-resources/next/
+desktop-resources/postgres/
+desktop-resources/.cache/

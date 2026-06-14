@@ -1,47 +1,35 @@
 # MatDev PM — aplikacja desktopowa (Windows)
 
-Aplikacja może działać jak zwykły program na Windows: **ikona na pulpicie → okno → bez terminala**.
+Aplikacja działa jak zwykły program: **pobierz instalator → zainstaluj → ikona na pulpicie → działa**. Bez Dockera u klienta.
 
 Składa się z:
 - **Electron** — okno aplikacji
-- **Next.js** — interfejs (uruchamiany w tle)
-- **matdev.API** — backend .NET (uruchamiany w tle)
-- **PostgreSQL** — baza (Docker lub lokalna instalacja)
+- **Next.js** — interfejs (w tle)
+- **matdev.API** — backend .NET (w tle)
+- **PostgreSQL** — wbudowana baza (w instalatorze, port `55432`, dane w `%APPDATA%`)
 
 ---
 
-## Dla Ciebie (developer) — jedno kliknięcie na co dzień
+## Dla klienta — jeden plik `.exe`
 
-**Wymagania:** Docker Desktop, Node.js, .NET SDK.
+1. Pobierz **`MatDev-PM-Setup-x.exe`**
+2. Zainstaluj (skrót na pulpicie)
+3. Uruchom **MatDev PM**
 
-```powershell
-cd matdev-pm
-npm install
-npm run start:desktop
-```
+Przy **pierwszym starcie** aplikacja sama:
+- inicjalizuje bazę w folderze użytkownika,
+- uruchamia PostgreSQL, API i interfejs,
+- ładuje dane demo (projekt **BW-2026 Turbo Housing Validation**).
 
-Skrypt:
-1. Uruchamia Docker (baza + API)
-2. Startuje Next.js
-3. Otwiera okno Electron
+**Nie trzeba:** Docker Desktop, osobnego Postgresa, terminala.
 
-Alternatywa (to samo ręcznie):
-
-```powershell
-# Terminal 1 — backend
-cd matdev-pm-backend
-docker compose up -d
-
-# Terminal 2 — frontend + okno
-cd matdev-pm
-npm run dev
-```
+Instalator ma ok. **400–500 MB** (UI + API + PostgreSQL).
 
 ---
 
-## Dla klienta — instalator `.exe`
+## Budowa instalatora (developer)
 
-**Wymagania do zbudowania:** Windows, Node.js, .NET SDK, Docker (do testów).
+**Wymagania:** Windows, Node.js 20+, .NET SDK 10, backend obok frontendu (`../matdev-pm-backend`).
 
 ```powershell
 cd matdev-pm
@@ -49,26 +37,44 @@ npm install
 npm run build:desktop
 ```
 
-Wynik: **`matdev-pm/release/MatDev-PM-Setup-0.1.0.exe`**
+Skrypt:
+1. Pobiera PostgreSQL Windows (jednorazowo, cache w `desktop-resources/postgres/`)
+2. Publikuje API (`dotnet publish`)
+3. Buduje Next.js standalone
+4. Pakuje Electron + NSIS
 
-Po instalacji użytkownik:
-1. Instaluje **Docker Desktop** (do bazy PostgreSQL) **albo** ma PostgreSQL na `localhost:5432` z bazą `matdev` / user `postgres` / hasło `postgres`
-2. Klika skrót **MatDev PM** na pulpicie
-3. Aplikacja sama:
-   - próbuje uruchomić bazę przez Docker (jeśli jest)
-   - startuje API i interfejs
-   - pokazuje ekran ładowania, potem główne okno
+Wynik: **`release/MatDev-PM-Setup-0.1.0.exe`**
 
 ---
 
-## Co robi instalator
+## Dev na co dzień (Docker)
+
+Do programowania nadal wygodniej Docker + hot reload:
+
+```powershell
+# Terminal 1
+cd matdev-pm-backend
+docker compose up -d
+
+# Terminal 2
+cd matdev-pm
+npm run dev:web          # tylko przeglądarka
+# lub
+npm run start:desktop    # Docker + Electron
+```
+
+---
+
+## Co jest w instalatorze
 
 | Element | Gdzie po instalacji |
 |---------|---------------------|
 | Electron | `C:\Program Files\MatDev PM\` |
-| API (.NET) | `resources\api\matdev.API.exe` |
+| API (.NET) | `resources\api\` |
 | UI (Next) | `resources\next\` |
-| docker-compose (baza) | `resources\database\` |
+| PostgreSQL | `resources\postgres\` |
+| Baza użytkownika | `%APPDATA%\matdev-pm\pgdata` |
+| Uploady lab | `%APPDATA%\matdev-pm\uploads` |
 
 ---
 
@@ -76,10 +82,10 @@ Po instalacji użytkownik:
 
 | Problem | Rozwiązanie |
 |---------|-------------|
-| Czerwone błędy API | Docker Desktop włączony → `docker compose up -d` w backendzie |
-| Okno „Timeout API” | Poczekaj 30 s, uruchom ponownie; sprawdź port 5432 i 5196 |
-| Stary backend bez Lab | `docker compose build matdev.api && docker compose up -d` |
-| Tylko przeglądarka | Użyj `npm run dev` lub skrótu po instalacji NSIS, nie samego `next dev` |
+| Długi pierwszy start | Normalne — init bazy trwa ok. 30–60 s |
+| Timeout API | Uruchom ponownie; sprawdź antywirus (nie blokuj `postgres.exe` / `matdev.API.exe`) |
+| Port 55432 zajęty | Zamknij inną instancję MatDev PM |
+| Dev: brak API | `docker compose up -d` w backendzie |
 
 ---
 
@@ -87,20 +93,14 @@ Po instalacji użytkownik:
 
 | Komenda | Opis |
 |---------|------|
-| `npm run dev` | Dev: Next + Electron (API osobno w Docker) |
+| `npm run dev` | Dev: Next + Electron (API w Docker) |
 | `npm run dev:web` | Tylko przeglądarka (localhost:3000) |
 | `npm run start:desktop` | Docker + Next + Electron (dev) |
-| `npm run build:desktop` | Pełny instalator Windows |
+| `npm run build:desktop` | Pełny instalator Windows (all-in-one) |
 | `npm run dist` | To samo co `build:desktop` |
 
 ---
 
-## Uwaga dla dostawy u klienta
+## GitHub Release
 
-Minimalny pakiet dla gościa:
-1. **MatDev-PM-Setup-x.exe** (instalator)
-2. **Docker Desktop** (instalator + krótka instrukcja „włącz przy starcie Windows”)
-
-Bez Dockera klient musi mieć PostgreSQL 16+ skonfigurowane jak wyżej.
-
-W przyszłości można dołożyć PostgreSQL portable w instalatorze (większy rozmiar, ~300 MB).
+Do klienta wrzucasz **tylko** plik `.exe` z folderu `release/` — nie commituj go do repo.

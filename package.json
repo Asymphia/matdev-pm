@@ -1,6 +1,6 @@
 {
     "name": "matdev-pm",
-    "version": "0.1.0",
+    "version": "1.0.0",
     "private": true,
     "main": "dist-electron/main.js",
     "scripts": {
@@ -51,7 +51,7 @@
         "extraResources": [
             { "from": "desktop-resources/api", "to": "api", "filter": ["**/*"] },
             { "from": "desktop-resources/next", "to": "next", "filter": ["**/*"] },
-            { "from": "desktop-resources/database", "to": "database", "filter": ["**/*"] }
+            { "from": "desktop-resources/postgres", "to": "postgres", "filter": ["**/*"] }
         ],
         "win": {
             "target": ["nsis"],

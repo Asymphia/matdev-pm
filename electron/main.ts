@@ -3,6 +3,12 @@ import { spawn, ChildProcess } from "child_process"
 import path from "path"
 import fs from "fs"
 import http from "http"
+import {
+    getAppUploadsPath,
+    getEmbeddedDbConnectionString,
+    startEmbeddedPostgres,
+    stopEmbeddedPostgres,
+} from "./embedded-postgres"
 
 const isDev = !app.isPackaged
 const FRONTEND_PORT = "3000"
@@ -14,7 +20,7 @@ let mainWindow: BrowserWindow | null = null
 let loadingWindow: BrowserWindow | null = null
 let apiProcess: ChildProcess | null = null
 let nextProcess: ChildProcess | null = null
-let dockerProcess: ChildProcess | null = null
+let postgresProcess: ChildProcess | null = null
 
 const setLoadingStatus = (text: string) => {
     loadingWindow?.webContents.executeJavaScript(
@@ -58,26 +64,6 @@ const spawnLogged = (label: string, command: string, args: string[], options: Pa
     return child
 }
 
-const tryStartDockerDatabase = async (): Promise<boolean> => {
-    const composeFile = isDev
-        ? path.join(__dirname, "..", "..", "matdev-pm-backend", "docker-compose.yml")
-        : path.join(process.resourcesPath, "database", "docker-compose.yml")
-
-    if (!fs.existsSync(composeFile)) return false
-
-    setLoadingStatus("Uruchamianie bazy danych (Docker)…")
-    return new Promise(resolve => {
-        dockerProcess = spawnLogged(
-            "docker",
-            "docker",
-            ["compose", "-f", composeFile, "up", "-d", "matdev.database"],
-            { cwd: path.dirname(composeFile), shell: true },
-        )
-        dockerProcess.on("exit", code => resolve(code === 0))
-        setTimeout(() => resolve(true), 8000)
-    })
-}
-
 const startApi = (): ChildProcess => {
     if (isDev) {
         setLoadingStatus("Tryb dev — API powinno działać na :5196 (Docker / dotnet run)")
@@ -90,6 +76,9 @@ const startApi = (): ChildProcess => {
         throw new Error(`Brak matdev.API.exe w ${apiDir}`)
     }
 
+    const uploadsDir = getAppUploadsPath()
+    fs.mkdirSync(uploadsDir, { recursive: true })
+
     setLoadingStatus("Uruchamianie serwera API…")
     return spawnLogged("api", apiExe, [], {
         cwd: apiDir,
@@ -97,9 +86,8 @@ const startApi = (): ChildProcess => {
             ...process.env,
             ASPNETCORE_ENVIRONMENT: "Production",
             ASPNETCORE_URLS: API_BASE,
-            ConnectionStrings__Database:
-                process.env.MATDEV_DB_CONNECTION ??
-                "Host=127.0.0.1;Port=5432;Database=matdev;Username=postgres;Password=postgres",
+            ConnectionStrings__Database: getEmbeddedDbConnectionString(),
+            FileStorage__RootPath: uploadsDir,
         },
     })
 }
@@ -122,12 +110,13 @@ const startNext = (): ChildProcess => {
             PORT: FRONTEND_PORT,
             HOSTNAME: "127.0.0.1",
             MATDEV_API_BASE_URL: API_BASE,
+            NEXT_PUBLIC_MATDEV_API_BASE_URL: API_BASE,
         },
     })
 }
 
 const killAll = () => {
-    for (const p of [nextProcess, apiProcess, dockerProcess]) {
+    for (const p of [nextProcess, apiProcess]) {
         if (p && !p.killed) {
             try {
                 p.kill()
@@ -138,7 +127,11 @@ const killAll = () => {
     }
     nextProcess = null
     apiProcess = null
-    dockerProcess = null
+
+    if (!isDev) {
+        stopEmbeddedPostgres(process.resourcesPath)
+    }
+    postgresProcess = null
 }
 
 const createLoadingWindow = () => {
@@ -183,14 +176,12 @@ const bootstrap = async () => {
 
     try {
         if (!isDev) {
-            try {
-                await waitForHttp(`${API_BASE}/api/health`, 3000)
-            } catch {
-                await tryStartDockerDatabase()
-                apiProcess = startApi()
-                setLoadingStatus("Czekam na API…")
-                await waitForHttp(`${API_BASE}/api/health`, 120_000)
-            }
+            setLoadingStatus("Uruchamianie bazy danych…")
+            postgresProcess = await startEmbeddedPostgres(process.resourcesPath)
+
+            apiProcess = startApi()
+            setLoadingStatus("Czekam na API…")
+            await waitForHttp(`${API_BASE}/api/health`, 120_000)
 
             nextProcess = startNext()
             setLoadingStatus("Czekam na interfejs…")
@@ -210,12 +201,10 @@ const bootstrap = async () => {
     } catch (e) {
         const msg = e instanceof Error ? e.message : String(e)
         console.error(msg)
-        showLoadingError(
-            `${msg}\n\nUpewnij się, że Docker Desktop działa (baza PostgreSQL) albo że PostgreSQL nasłuchuje na porcie 5432.`,
-        )
+        showLoadingError(msg)
         dialog.showErrorBox(
             "MatDev PM — błąd uruchomienia",
-            "Aplikacja nie mogła wystartować. Sprawdź Docker Desktop lub PostgreSQL, potem uruchom ponownie.",
+            "Aplikacja nie mogła wystartować. Spróbuj uruchomić ponownie. Jeśli problem wraca, zainstaluj aplikację od nowa.",
         )
     }
 }

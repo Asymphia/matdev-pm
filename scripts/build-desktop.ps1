@@ -18,9 +18,14 @@ if (-not (Test-Path $BackendRoot)) {
     throw ('Nie znaleziono backendu: {0}' -f $BackendRoot)
 }
 
+Write-Host ''
+Write-Host '[1/5] PostgreSQL (wbudowana baza)...' -ForegroundColor Yellow
+powershell -ExecutionPolicy Bypass -File (Join-Path $PSScriptRoot 'fetch-postgres.ps1')
+if ($LASTEXITCODE -ne 0) { exit 1 }
+
 # 1) Backend - self-contained exe
 Write-Host ''
-Write-Host '[1/4] Publikacja API (win-x64)...' -ForegroundColor Yellow
+Write-Host '[1/5] Publikacja API (win-x64)...' -ForegroundColor Yellow
 if (Test-Path $ApiOut) { Remove-Item $ApiOut -Recurse -Force }
 New-Item -ItemType Directory -Path $ApiOut | Out-Null
 
@@ -36,15 +41,16 @@ Pop-Location
 
 # 2) Next.js standalone
 Write-Host ''
-Write-Host '[2/4] Build Next.js...' -ForegroundColor Yellow
+Write-Host '[2/5] Build Next.js...' -ForegroundColor Yellow
 Push-Location $FrontendRoot
 $env:MATDEV_API_BASE_URL = 'http://127.0.0.1:5196'
+$env:NEXT_PUBLIC_MATDEV_API_BASE_URL = 'http://127.0.0.1:5196'
 npm run build
 if ($LASTEXITCODE -ne 0) { Pop-Location; exit 1 }
 Pop-Location
 
 Write-Host ''
-Write-Host '[3/4] Pakowanie Next standalone...' -ForegroundColor Yellow
+Write-Host '[3/5] Pakowanie Next standalone...' -ForegroundColor Yellow
 $StandaloneSrc = Join-Path $FrontendRoot '.next/standalone'
 $StaticSrc = Join-Path $FrontendRoot '.next/static'
 $PublicSrc = Join-Path $FrontendRoot 'public'
@@ -66,7 +72,7 @@ if (Test-Path $PublicSrc) {
 
 # Electron compile + loading.html
 Write-Host ''
-Write-Host '[4/4] Electron + NSIS installer...' -ForegroundColor Yellow
+Write-Host '[5/5] Electron + NSIS installer...' -ForegroundColor Yellow
 Push-Location $FrontendRoot
 npx tsc -p tsconfig.electron.json
 Copy-Item (Join-Path $FrontendRoot 'electron/loading.html') (Join-Path $FrontendRoot 'dist-electron/loading.html') -Force
