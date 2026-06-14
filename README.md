@@ -1,36 +1,134 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# MatDev PM — frontend
 
-## Getting Started
+Interfejs aplikacji **MatDev PM** (zarządzanie projektami materiałowymi / lab) — **Next.js** + opcjonalnie **Electron** (Windows desktop).
 
-First, run the development server:
+Backend API: repozytorium [`matdev-pm-backend`](../matdev-pm-backend) (osobny projekt, zwykle obok tego folderu).
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+---
+
+## Stack
+
+| Warstwa | Technologia |
+|---------|-------------|
+| UI | Next.js 16 (App Router), React 19, Tailwind CSS 4 |
+| Desktop | Electron + electron-builder (NSIS) |
+| API | REST → matdev.API (.NET), domyślnie `http://127.0.0.1:5196` |
+
+---
+
+## Wymagania
+
+- **Node.js** 20+
+- **Docker Desktop** — do bazy PostgreSQL i API (zalecane na co dzień)
+- Repozytorium **backendu** sklonowane obok: `../matdev-pm-backend`
+
+---
+
+## Szybki start (przeglądarka)
+
+```powershell
+cd matdev-pm
+npm install
+
+# Skopiuj zmienne środowiskowe
+copy .env.example .env.local
+
+# Terminal 1 — backend (w drugim repo)
+cd ..\matdev-pm-backend
+docker compose up -d
+
+# Terminal 2 — frontend
+cd ..\matdev-pm
+npm run dev:web
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Otwórz [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Na ekranie startowym wybierz użytkownika demo albo załaduj dane — patrz [MOCK_DATA.md w backendzie](../matdev-pm-backend/MOCK_DATA.md).
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## Szybki start (okno desktop — dev)
 
-To learn more about Next.js, take a look at the following resources:
+```powershell
+cd matdev-pm
+npm install
+npm run start:desktop
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Skrypt uruchamia Docker (baza + API), Next.js i okno Electron. Szczegóły: **[DESKTOP.md](./DESKTOP.md)**.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## Zmienne środowiskowe
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Plik `.env.local` (wzorzec: [`.env.example`](./.env.example)):
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| Zmienna | Opis |
+|---------|------|
+| `MATDEV_API_BASE_URL` | URL API (server components, Server Actions) |
+| `NEXT_PUBLIC_MATDEV_API_BASE_URL` | URL API w przeglądarce (upload plików lab) |
+
+Domyślnie obie wskazują na `http://127.0.0.1:5196`.
+
+---
+
+## Skróty npm
+
+| Komenda | Opis |
+|---------|------|
+| `npm run dev:web` | Tylko Next.js (localhost:3000) |
+| `npm run dev` | Next.js + okno Electron (API osobno w Docker) |
+| `npm run start:desktop` | Docker + Next + Electron — jeden skrypt |
+| `npm run build` | Produkcja Next + kompilacja Electron |
+| `npm run build:desktop` | Instalator Windows (`.exe` w `release/`) |
+| `npm run lint` | ESLint |
+
+---
+
+## Główne ekrany
+
+| Ścieżka | Opis |
+|---------|------|
+| `/` | Wybór użytkownika / status API |
+| `/projects` | Lista projektów |
+| `/projects/[slug]` | Widok projektu |
+| `/projects/[slug]/tasks` | Zadania |
+| `/projects/[slug]/budget` | Budżet projektu |
+| `/projects/[slug]/lab` | Zlecenia laboratoryjne |
+| `/projects/[slug]/gantt` | Harmonogram |
+| `/budgets` | Przegląd budżetów |
+| `/users` | Użytkownicy |
+
+---
+
+## Struktura (skrót)
+
+```
+app/              — strony Next.js (App Router)
+components/       — UI (projekt, zadania, budżet, lab, layout)
+lib/server/       — fetch do API (SSR)
+app/actions/      — Server Actions (mutacje)
+electron/         — proces główny Electron
+scripts/          — build/start desktop (PowerShell)
+```
+
+---
+
+## Rozwiązywanie problemów
+
+| Problem | Co zrobić |
+|---------|-----------|
+| Błędy połączenia z API | Docker włączony → `docker compose up -d` w backendzie |
+| Upload pliku lab > 1 MB | Upewnij się, że `NEXT_PUBLIC_MATDEV_API_BASE_URL` w `.env.local` |
+| Stary backend | `docker compose build matdev.api && docker compose up -d` w backendzie |
+
+Więcej: [DESKTOP.md](./DESKTOP.md).
+
+---
+
+## Powiązane dokumenty
+
+- [DESKTOP.md](./DESKTOP.md) — instalator, Electron, dostawa klientowi
+- [matdev-pm-backend/README.md](../matdev-pm-backend/README.md) — API, Docker, testy
+- [MOCK_DATA.md](../matdev-pm-backend/MOCK_DATA.md) — dane demo Borg Warner

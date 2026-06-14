@@ -32,7 +32,6 @@
 # Environment variables
 # =========================
 .env
-.env
 .env.development
 .env.development.local
 .env.test
@@ -47,6 +46,9 @@
 .DS_Store
 Thumbs.db
 *.pem
+
+# Local drafts (not part of the app)
+/local/
 
 # =========================
 # Debug / Logs
@@ -85,7 +87,9 @@ next-env.d.ts
 # Prisma generated client
 /prisma/client/
 
-# electron
+# =========================
+# Electron / desktop build
+# =========================
 dist-electron/
 release/
 desktop-resources/api/
