@@ -1,9 +1,11 @@
-const Dashboard = () => {
-  return  (
-      <div>
-          <h1>Dashboard</h1>
-      </div>
-  )
-}
+import { Suspense } from "react"
+import WelcomeSkeleton from "@/components/welcome/WelcomeSkeleton"
+import WelcomePageContent from "@/components/welcome/WelcomePageContent"
 
-export default Dashboard
+const WelcomePage = () => (
+    <Suspense fallback={<WelcomeSkeleton />}>
+        <WelcomePageContent />
+    </Suspense>
+)
+
+export default WelcomePage

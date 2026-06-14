@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8" />
+    <title>MatDev PM</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: "Segoe UI", system-ui, sans-serif;
+            background: #1a1f2e;
+            color: #e8eaed;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            padding: 2rem;
+            text-align: center;
+        }
+        h1 { font-size: 1.5rem; font-weight: 600; }
+        p { color: #9aa0a6; font-size: 0.9rem; max-width: 22rem; line-height: 1.5; }
+        .spinner {
+            width: 2.5rem;
+            height: 2.5rem;
+            border: 3px solid #3c4043;
+            border-top-color: #8ab4f8;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        #status { min-height: 1.25rem; font-size: 0.85rem; color: #bdc1c6; }
+        #error { display: none; color: #f28b82; font-size: 0.85rem; max-width: 26rem; line-height: 1.5; }
+    </style>
+</head>
+<body>
+    <div class="spinner" aria-hidden="true"></div>
+    <h1>MatDev PM</h1>
+    <p id="status">Uruchamianie aplikacji…</p>
+    <p id="error"></p>
+</body>
+</html>

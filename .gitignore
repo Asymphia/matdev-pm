@@ -39,6 +39,7 @@
 .env.test.local
 .env.production
 .env.production.local
+.env.local
 
 # =========================
 # Misc
@@ -87,3 +88,5 @@ next-env.d.ts
 # electron
 dist-electron/
 release/
+desktop-resources/api/
+desktop-resources/next/
